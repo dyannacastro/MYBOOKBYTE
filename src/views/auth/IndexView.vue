@@ -292,7 +292,7 @@ body {
 }
 
 .line-3 {
-  --color: #c096ff;
+  --color: #b909fe;
   width: 100%;
   height: 100%;
   border-radius: 50%;
