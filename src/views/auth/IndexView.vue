@@ -320,7 +320,7 @@ h1, p {
   border-radius: 50%; 
   box-shadow: 0 0 15px rgba(216, 9, 202, 0.8); 
   animation: breathe 3s ease-in-out infinite, gradient-animation 5s ease infinite; /* Add gradient animation */
-  background: linear-gradient(#68017a, #5f026f, #b909fe, #64c0ce); /* Initial gradient */
+  background: linear-gradient(#c096ff,#b909fe, #f749f1, #0ff); /* Initial gradient */
   padding: 20px; /* Keep this for padding */
 }
 
@@ -335,13 +335,13 @@ h1, p {
 
 @keyframes gradient-animation {
   0% {
-    background: linear-gradient(#BA68C8, #AB47BC, #b909fe, #64c0ce);
+    background: linear-gradient(#c096ff,#b909fe, #f749f1, #0ff);
   }
   50% {
-    background: linear-gradient(#64c0ce, #b909fe, #AB47BC, #BA68C8); /* Change order for animation */
+    background: linear-gradient(#0ff, #f749f1, #b909fe, #c096ff); /* Change order for animation */
   }
   100% {
-    background: linear-gradient(#BA68C8, #AB47BC, #b909fe, #64c0ce);
+    background: linear-gradient(#c096ff,#b909fe, #f749f1, #0ff);
   }
 }
 
