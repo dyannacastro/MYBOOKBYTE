@@ -58,7 +58,7 @@ const readBook = (id) => {
             </v-card>
           </v-col>
         </v-row>
-        <p v-if="favoriteBooks.length === 0" class="text">No favorite Books added yet.</p>
+        <p v-if="favoriteBooks.length === 0" class="text">No favorite books added yet.</p>
       </v-container>
     </template>
   </AppLayout>
@@ -128,7 +128,7 @@ const readBook = (id) => {
 
 .v-card {
   padding-top: 30px;
-  border-radius: 8px;
+  border-radius: 8px; 
   transition: background-color 0.3s; 
 }
 
