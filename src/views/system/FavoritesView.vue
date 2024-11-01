@@ -58,7 +58,7 @@ const readBook = (id) => {
             </v-card>
           </v-col>
         </v-row>
-        <p v-if="favoriteBooks.length === 0" class="text">No favorite books added yet.</p>
+        <p v-if="favoriteBooks.length === 0" class="text">No favorite Books added yet.</p>
       </v-container>
     </template>
   </AppLayout>
