@@ -7,13 +7,10 @@ const emit = defineEmits(['update:isDrawerVisible']);
 
 const { mobile } = useDisplay();
 
-// Using `isDrawerVisible` directly from props without redefining it
 watch(() => props.isDrawerVisible, (newVal) => {
-  // Emit the new value whenever it changes to update the parent
   emit('update:isDrawerVisible', newVal);
 });
 
-// Main Navigation items
 const mainNav = [
   ['Dashboard', 'mdi-view-dashboard'],
   ['Favorites', 'mdi-heart'],
