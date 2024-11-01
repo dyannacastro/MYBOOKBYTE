@@ -4,13 +4,11 @@ import { formActionDefault, supabase } from '@/utils/supabase'
 import { requiredValidator, emailValidator } from '@/utils/validators'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthUserStore } from '@/stores/authUser' // Import the Pinia store
+import { useAuthUserStore } from '@/stores/authUser' 
 
-// Utilize pre-defined vue functions
 const router = useRouter();
-const authUserStore = useAuthUserStore(); // Instantiate the store
+const authUserStore = useAuthUserStore(); 
 
-// Load Variables
 const formDataDefault = {
   firstname: '',
   lastname: '',
@@ -27,7 +25,6 @@ const isPasswordVisible = ref(false);
 const refVForm = ref();
 
 const onSubmit = async () => {
-  // Reset Form Action utils; Turn on processing at the same time
   formAction.value = { ...formActionDefault, formProcess: true };
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -35,10 +32,9 @@ const onSubmit = async () => {
     password: formData.value.password
   });
   
-  // Check if data contains user information
   if (data) {
     authUserStore.setUserData({
-      image_url: data.user?.user_metadata?.avatar_url || '', // Adjust based on your user data structure
+      image_url: data.user?.user_metadata?.avatar_url || '', 
       firstname: data.user?.user_metadata?.first_name || '',
       lastname: data.user?.user_metadata?.last_name || '',
       email: data.user?.email || '',
@@ -46,19 +42,14 @@ const onSubmit = async () => {
   }
 
   if (error) {
-    // Add Error Message and Status Code
     formAction.value.formErrorMessage = error.message;
     formAction.value.formStatus = error.status;
   } else if (data) {
-    // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Logged In!';
-    // Redirect Account to Dashboard
     router.replace('/dashboard');
   }
 
-  // Reset Form
   refVForm.value?.reset();
-  // Turn off processing
   formAction.value.formProcess = false;
 }
 
