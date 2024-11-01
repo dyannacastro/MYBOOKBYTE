@@ -9,7 +9,7 @@ const { smAndDown } = useDisplay();
   <v-container fluid class="full-height-container">
     <v-row no-gutters class="custom-flex-container">
       
-      <v-col v-if="!smAndDown" cols="12" md="5" lg="6" class="bg-surface-dark text-center d-flex flex-column align-center justify-center left-col" style="padding-left: 15%;">
+      <v-col v-if="!smAndDown" cols="12" md="6" lg="6" class="bg-surface-dark text-center d-flex flex-column align-center justify-center left-col">
         <div class="content-wrapper">
           <h1 class="gradient-text">Welcome to BookByte</h1>
           <div class="desktop-social-section">
@@ -27,7 +27,7 @@ const { smAndDown } = useDisplay();
         </div>
       </v-col>
 
-      <v-col cols="12" md="5" lg="5" class="d-flex align-center justify-center right-col">
+      <v-col cols="12" md="6" lg="6" class="d-flex align-center justify-center right-col">
         <v-card class="mx-auto custom-card" elevation="0">
           
           <div v-if="smAndDown" class="mobile-welcome-section">
