@@ -12,9 +12,7 @@ const removeFavorite = (id) => {
   favoritesStore.removeFavorite(id)
 }
 
-// Placeholder for read action
 const readBook = (id) => {
-  // Implement your logic to read the book here.
   console.log(`Read book with id: ${id}`);
 }
 </script>
@@ -47,7 +45,6 @@ const readBook = (id) => {
               <v-card-actions class="d-flex justify-center">
                 <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(book.id)">Read</v-btn>
                 <v-spacer></v-spacer>
-                <!-- Updated Remove Button with Heart Icon -->
                 <v-btn
                   icon
                   color="purple"
@@ -69,27 +66,24 @@ const readBook = (id) => {
 
 <style scoped>
 
-/* Keyframes for the pop-out and pop-in effect */
 @keyframes pop {
   0%, 100% {
-    transform: scale(1); /* Normal size at start and end */
+    transform: scale(1); 
   }
   50% {
-    transform: scale(1.1); /* Scale up at the middle of the animation */
+    transform: scale(1.1); 
   }
 }
 
-/* Apply the keyframes animation to the favorite icon button */
 .fav-icon {
-  animation: pop 1s infinite ease-in-out; /* Pop animation with infinite loop */
-  box-shadow: 0 0 15px 4px rgba(186, 104, 200, 1); /* Box-shadow for 3D-like appearance */
-  transition: box-shadow 0.3s ease-in-out, color 0.3s ease-in-out; /* Smooth transition for shadow and color changes */
+  animation: pop 1s infinite ease-in-out; 
+  box-shadow: 0 0 15px 4px rgba(186, 104, 200, 1); 
+  transition: box-shadow 0.3s ease-in-out, color 0.3s ease-in-out; 
 }
 
-/* Pop-in effect when clicked (active) */
 .fav-icon:active {
-  transform: scale(0.9); /* Shrink slightly when pressed to simulate pressing */
-  box-shadow: 0 0 10px rgba(186, 104, 200, 0.8); /* Softer shadow to indicate pressing down */
+  transform: scale(0.9); 
+  box-shadow: 0 0 10px rgba(186, 104, 200, 0.8); 
 }
 
 .fav-icon:hover {
@@ -134,7 +128,7 @@ const readBook = (id) => {
 
 .v-card {
   padding-top: 30px;
-  border-radius: 8px; /* Rounded corners */
+  border-radius: 8px;
   transition: background-color 0.3s; 
 }
 

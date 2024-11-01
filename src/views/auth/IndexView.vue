@@ -3,19 +3,17 @@ import { ref, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
 const { mobile } = useDisplay()
-const isLoading = ref(true) // State to control preloader visibility
+const isLoading = ref(true) 
 
-// Simulate loading time for demonstration purposes
 onMounted(() => {
   setTimeout(() => {
-    isLoading.value = false // Hide preloader after loading
-  }, 3000) // Change this duration as needed
+    isLoading.value = false 
+  }, 3000) 
 })
 </script>
 
 <template>
   <v-app>
-    <!-- Preloader Section -->
     <div v-if="isLoading" class="preloader">
       <div class="atom">
         <div class="line line-1"></div>
@@ -24,7 +22,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Main Content Section, only shown when not loading -->
     <div v-else>
       <!-- Navbar Section -->
       <v-app-bar app color="black" flat>
@@ -141,7 +138,7 @@ onMounted(() => {
           </v-btn>
         </v-row>
       </v-container>
-    </div> <!-- End of Main Content Section -->
+    </div> 
   </v-app>
 </template>
 
@@ -221,11 +218,11 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8); /* Dark overlay */
+  background: rgba(0, 0, 0, 0.8); 
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999; /* Ensure it is above other content */
+  z-index: 9999; 
 }
 
 .atom {
@@ -255,7 +252,7 @@ body {
 }
 
 .line-1 {
-  --color: #40ff9c;
+  --color: #f749f1;
   width: 100%;
   height: 100%;
   border-radius: 50%;
