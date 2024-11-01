@@ -32,10 +32,8 @@ const refVForm = ref();
 const onSubmit = async () => {
   formAction.value = { ...formActionDefault, formProcess: true };
 
-  // Create display_name by combining first and last name
   const displayName = `${formData.value.firstname} ${formData.value.lastname}`;
 
-  // Register the user using Supabase Auth
   const { data, error } = await supabase.auth.signUp({
     email: formData.value.email,
     password: formData.value.password,
@@ -43,7 +41,7 @@ const onSubmit = async () => {
       data: {
         firstname: formData.value.firstname,
         lastname: formData.value.lastname,
-        display_name: displayName, // Add display name here
+        display_name: displayName, 
       }
     }
   });
@@ -57,17 +55,15 @@ const onSubmit = async () => {
   if (data?.user) {
     formAction.value.formSuccessMessage = 'Successfully Registered Account.';
 
-    // Fetch the complete user information after registration
     try {
       const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (userError) {
         console.error('Error fetching user data after registration:', userError);
       } else {
-        // Set the user data in the Pinia store, including metadata
         authStore.setUserData({
           ...userData.user,
-          ...userData.user.user_metadata // This will include firstname, lastname, and display_name
+          ...userData.user.user_metadata 
         });
         console.log('User data set successfully after registration:', authStore.userData);
       }
@@ -76,7 +72,6 @@ const onSubmit = async () => {
       console.error('Unexpected error while fetching user data:', err);
     }
 
-    // Redirect user to the dashboard
     router.replace('/dashboard');
   }
 
