@@ -15,7 +15,7 @@
         </v-card-text>
   
         <v-card-actions class="justify-center">
-          <v-btn color="primary" @click="saveProfile">Save Changes</v-btn>
+          <v-btn color="purple" @click="saveProfile">Save Changes</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -25,8 +25,8 @@
   import { ref } from 'vue'
   
   const user = ref({
-    name: 'John Doe',
-    email: 'johndoe@example.com',
+    name: 'Dyanna Castro',
+    email: 'ddanna@gmail.com',
     profilePicture: 'profile-pic.jpg',
     about: 'I love reading books and learning new things!',
   })
