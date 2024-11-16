@@ -2,19 +2,29 @@
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/SideNavigation.vue'
 import { useFavoritesStore } from '@/stores/userFavorites'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 
-const favoritesStore = useFavoritesStore() 
+const favoritesStore = useFavoritesStore()
 
 const favoriteBooks = computed(() => favoritesStore.favoriteBooks)
 
+// Function to remove a book from favorites
 const removeFavorite = (id) => {
   favoritesStore.removeFavorite(id)
 }
 
+// Function to handle the reading of a book
 const readBook = (id) => {
   console.log(`Read book with id: ${id}`);
 }
+
+// On component mounted, check if user is logged in and load their favorites
+onMounted(() => {
+  const userEmail = localStorage.getItem('userEmail');
+  if (userEmail) {
+    favoritesStore.setUser(userEmail);
+  }
+});
 </script>
 
 <template>
@@ -25,17 +35,14 @@ const readBook = (id) => {
 
     <template #content>
       <v-container>
-        <h1 class="text-right">
-          <v-btn
-                  icon
-                  color="black"
-                  dark
-                  class="fav-icon mx-2 mt-5"
-                >
-                  <v-icon color="purple">mdi-heart</v-icon>
-                </v-btn>            
+        <h1 class="text-right my-4">
+          <span class="gradient-text">MY FAVORITES</span>
+          <v-btn icon color="black" dark class="fav-icon mx-2">
+            <v-icon color="purple">mdi-heart</v-icon>
+          </v-btn>
         </h1>
-        
+
+
         <v-row dense>
           <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" sm="6" md="4">
             <v-card>
@@ -45,15 +52,9 @@ const readBook = (id) => {
               <v-card-actions class="d-flex justify-center">
                 <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(book.id)">Read</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn
-                  icon
-                  color="purple"
-                  dark
-                  class="glow mx-2 mt-5"
-                  @click="removeFavorite(book.id)"
-                >
+                <v-btn icon color="purple" dark class="glow mx-2 mt-5" @click="removeFavorite(book.id)">
                   <v-icon>mdi-heart</v-icon>
-                </v-btn>             
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -65,25 +66,27 @@ const readBook = (id) => {
 </template>
 
 <style scoped>
-
 @keyframes pop {
-  0%, 100% {
-    transform: scale(1); 
+
+  0%,
+  100% {
+    transform: scale(1);
   }
+
   50% {
-    transform: scale(1.1); 
+    transform: scale(1.1);
   }
 }
 
 .fav-icon {
-  animation: pop 1s infinite ease-in-out; 
-  box-shadow: 0 0 15px 4px rgba(186, 104, 200, 1); 
-  transition: box-shadow 0.3s ease-in-out, color 0.3s ease-in-out; 
+  animation: pop 1s infinite ease-in-out;
+  box-shadow: 0 0 15px 4px rgba(186, 104, 200, 1);
+  transition: box-shadow 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .fav-icon:active {
-  transform: scale(0.9); 
-  box-shadow: 0 0 10px rgba(186, 104, 200, 0.8); 
+  transform: scale(0.9);
+  box-shadow: 0 0 10px rgba(186, 104, 200, 0.8);
 }
 
 .fav-icon:hover {
@@ -91,10 +94,10 @@ const readBook = (id) => {
 }
 
 .bordered {
-  border-radius: 8px; 
-  padding: 8px; 
+  border-radius: 8px;
+  padding: 8px;
   box-shadow: 0 0 15px 4px rgba(186, 104, 200, 0.8);
-  transition: box-shadow 0.3s ease-in-out; 
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 .bordered:hover {
@@ -112,27 +115,50 @@ const readBook = (id) => {
 
 .text {
   display: flex;
-  justify-content: center; 
-  align-items: center; 
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  height: 65vh; 
+  height: 65vh;
   font-size: .7rem;
 }
 
 .v-card-title {
   color: rgb(234, 8, 234);
-  font-size: 1rem; 
-  padding: 16px; 
+  font-size: 1rem;
+  padding: 16px;
   text-align: center;
 }
 
 .v-card {
   padding-top: 30px;
-  border-radius: 8px; 
-  transition: background-color 0.3s; 
+  border-radius: 8px;
+  transition: background-color 0.3s;
 }
 
 .v-card:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #64c0ce, #b909fe, #64c0ce);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.8rem;
+  animation: gradient-animation 3s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 </style>
