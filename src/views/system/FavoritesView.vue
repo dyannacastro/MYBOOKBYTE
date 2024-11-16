@@ -35,14 +35,17 @@ onMounted(() => {
 
     <template #content>
       <v-container>
-        <h1 class="text-right my-4">
-          <span class="gradient-text">MY FAVORITES</span>
-          <v-btn icon color="black" dark class="fav-icon mx-2">
-            <v-icon color="purple">mdi-heart</v-icon>
-          </v-btn>
+        <h1 class="text-right">
+          <v-btn
+                  icon
+                  color="black"
+                  dark
+                  class="fav-icon mx-2 mt-5"
+                >
+                  <v-icon color="purple">mdi-heart</v-icon>
+                </v-btn>            
         </h1>
-
-
+        
         <v-row dense>
           <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" sm="6" md="4">
             <v-card>
