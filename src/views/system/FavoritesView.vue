@@ -2,19 +2,29 @@
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/SideNavigation.vue'
 import { useFavoritesStore } from '@/stores/userFavorites'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 
 const favoritesStore = useFavoritesStore()
 
 const favoriteBooks = computed(() => favoritesStore.favoriteBooks)
 
+// Function to remove a book from favorites
 const removeFavorite = (id) => {
   favoritesStore.removeFavorite(id)
 }
 
+// Function to handle the reading of a book
 const readBook = (id) => {
   console.log(`Read book with id: ${id}`);
 }
+
+// On component mounted, check if user is logged in and load their favorites
+onMounted(() => {
+  const userEmail = localStorage.getItem('userEmail');
+  if (userEmail) {
+    favoritesStore.setUser(userEmail);
+  }
+});
 </script>
 
 <template>
@@ -25,12 +35,17 @@ const readBook = (id) => {
 
     <template #content>
       <v-container>
-        <h1 class="text-right my-4"> MY FAV BOOKS
-          <v-btn icon color="black" dark class="fav-icon mx-2">
-            <v-icon color="purple">mdi-heart</v-icon>
-          </v-btn>
+        <h1 class="text-right">
+          <v-btn
+                  icon
+                  color="black"
+                  dark
+                  class="fav-icon mx-2 mt-5"
+                >
+                  <v-icon color="purple">mdi-heart</v-icon>
+                </v-btn>            
         </h1>
-
+        
         <v-row dense>
           <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" sm="6" md="4">
             <v-card>
@@ -125,5 +140,28 @@ const readBook = (id) => {
 
 .v-card:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #64c0ce, #b909fe, #64c0ce);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.8rem;
+  animation: gradient-animation 3s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 </style>
