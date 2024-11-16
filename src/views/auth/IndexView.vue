@@ -3,12 +3,12 @@ import { ref, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
 const { mobile } = useDisplay()
-const isLoading = ref(true) 
+const isLoading = ref(true)
 
 onMounted(() => {
   setTimeout(() => {
-    isLoading.value = false 
-  }, 3000) 
+    isLoading.value = false
+  }, 3000)
 })
 </script>
 
@@ -30,7 +30,7 @@ onMounted(() => {
             <v-spacer></v-spacer>
             <v-btn color="purple" class="bordered btn-link mx-2 mt-5" to="/register">
               Get Started
-            </v-btn>           
+            </v-btn>
             <v-btn color="purple" dark class="bordered mx-2 mt-5" to="/login">
               Login
             </v-btn>
@@ -42,12 +42,10 @@ onMounted(() => {
       <v-container class="mt-16 text-center">
         <v-row align="center" justify="center">
           <v-col cols="12" md="12">
-            <v-img
-              src="/images/book-logo.png"
-              class="circle-logo mb-4"
-              max-width="300"
-            ></v-img>
+            <v-img src="/images/book-logo.png" class="circle-logo mb-4" max-width="300"></v-img>
           </v-col>
+
+
         </v-row>
       </v-container>
 
@@ -58,7 +56,10 @@ onMounted(() => {
             <v-card>
               <v-card-title class="custom-title">Comprehensive Technology Book Library</v-card-title>
               <v-card-text>
-                BOOKBYTE offers a wide selection of books focused on technology topics like programming languages (Python, JavaScript, etc.), web development, software engineering, data science, and more. Users can search for books based on categories, titles, authors, or specific tech topics, ensuring they can easily find the resources they need.
+                BOOKBYTE offers a wide selection of books focused on technology topics like programming languages
+                (Python, JavaScript, etc.), web development, software engineering, data science, and more. Users can
+                search for books based on categories, titles, authors, or specific tech topics, ensuring they can easily
+                find the resources they need.
               </v-card-text>
             </v-card>
           </v-col>
@@ -66,7 +67,11 @@ onMounted(() => {
             <v-card>
               <v-card-title class="custom-title"> "Add to Favorites" Feature</v-card-title>
               <v-card-text>
-                Users can mark books as Favorites to create a personalized collection of their most preferred or frequently used books. This feature allows easy access to their favorite programming guides, tech tutorials, or reference materials without needing to search for them again. The Favorites list is saved in the user's favorite page, giving them quick access to the books they are currently reading or want to revisit in the future.
+                Users can mark books as Favorites to create a personalized collection of their most preferred or
+                frequently used books. This feature allows easy access to their favorite programming guides, tech
+                tutorials, or reference materials without needing to search for them again. The Favorites list is saved
+                in the user's favorite page, giving them quick access to the books they are currently reading or want to
+                revisit in the future.
               </v-card-text>
             </v-card>
           </v-col>
@@ -74,7 +79,11 @@ onMounted(() => {
             <v-card>
               <v-card-title class="custom-title">Ideal Resource for Students</v-card-title>
               <v-card-text>
-                BOOKBYTE is particularly beneficial for students studying technology-related fields. With its wide range of up-to-date books and learning materials, students can easily find textbooks, tutorials, and reference guides on programming, software development, data science, and more. The platform's "Favorites" feature also allows students to save essential resources for quick access, making it easier for them to organize their study materials and revisit important content during exams or project work.
+                BOOKBYTE is particularly beneficial for students studying technology-related fields. With its wide range
+                of up-to-date books and learning materials, students can easily find textbooks, tutorials, and reference
+                guides on programming, software development, data science, and more. The platform's "Favorites" feature
+                also allows students to save essential resources for quick access, making it easier for them to organize
+                their study materials and revisit important content during exams or project work.
               </v-card-text>
             </v-card>
           </v-col>
@@ -82,7 +91,9 @@ onMounted(() => {
             <v-card>
               <v-card-title class="custom-title">Search and Filter by Technology Topics</v-card-title>
               <v-card-text>
-                BOOKBYTE offers a user-friendly search and filter feature that allows users to search for books by specific programming languages, tech frameworks, or topics like cloud computing, cybersecurity, or AI. This helps users find the most relevant books based on their area of interest or learning goals.
+                BOOKBYTE offers a user-friendly search and filter feature that allows users to search for books by
+                specific programming languages, tech frameworks, or topics like cloud computing, cybersecurity, or AI.
+                This helps users find the most relevant books based on their area of interest or learning goals.
               </v-card-text>
             </v-card>
           </v-col>
@@ -104,46 +115,114 @@ onMounted(() => {
       </v-container>
 
       <!-- Terms of Use Section -->
-      <v-container class="mt-16">
+      <v-container class="mt-10">
         <v-row>
           <v-col cols="12">
             <v-card flat class="terms-card">
               <v-card-title class="term-n-use">Terms of Use</v-card-title>
               <v-card-text>
-                By accessing and using this website, you agree to the following terms and conditions. The platform allows users to search for and read books online. All content available through the website may be protected by copyright laws, and users should be aware that the availability of books for reading may vary by region.
-                <br/><br/>
-                The website is designed for use by human users only. Automated tools or bots that scrape or misuse the platform may be blocked from accessing the site. To ensure a smooth experience and maintain platform integrity, cookies and related technologies may be used.
-                <br/><br/>
-                Users are permitted to search for and read books on the platform for personal, non-commercial use. Any redistribution of content or use beyond personal reading is prohibited without proper authorization from the copyright holder.
-                <br/><br/>
-                By using this platform, you consent to the collection of data as outlined in our Privacy Policy, and you agree to comply with these Terms of Use. Violation of these terms may result in the suspension of access to the site.
+                By accessing and using this website, you agree to the following terms and conditions. The platform
+                allows users to search for and read books online. All content available through the website may be
+                protected by copyright laws, and users should be aware that the availability of books for reading may
+                vary by region.
+                <br /><br />
+                The website is designed for use by human users only. Automated tools or bots that scrape or misuse the
+                platform may be blocked from accessing the site. To ensure a smooth experience and maintain platform
+                integrity, cookies and related technologies may be used.
+                <br /><br />
+                Users are permitted to search for and read books on the platform for personal, non-commercial use. Any
+                redistribution of content or use beyond personal reading is prohibited without proper authorization from
+                the copyright holder.
+                <br /><br />
+                By using this platform, you consent to the collection of data as outlined in our Privacy Policy, and you
+                agree to comply with these Terms of Use. Violation of these terms may result in the suspension of access
+                to the site.
               </v-card-text>
             </v-card>
           </v-col>
         </v-row>
 
-        <!-- Social Media Section -->
-        <v-row justify="center" class="mt-4">
-          <v-btn icon class="mx-4 social-btn rotate-on-hover">
-            <v-icon>mdi-facebook</v-icon>
-          </v-btn>
-          <v-btn icon class="mx-4 social-btn rotate-on-hover">
-            <v-icon>mdi-twitter</v-icon>
-          </v-btn>
-          <v-btn icon class="mx-4 social-btn rotate-on-hover">
-            <v-icon>mdi-email</v-icon>
-          </v-btn>
-          <v-btn icon class="mx-4 social-btn rotate-on-hover">
-            <v-icon>mdi-whatsapp</v-icon>
-          </v-btn>
-        </v-row>
       </v-container>
-    </div> 
+
+      <!-- Genre Menu Section -->
+      <section class="genre-menu">
+        <nav>
+          <ul>
+            <li style="--book-tag-accent-color: #008fd4;">
+              <figure>
+                <img src="https://simonteen.b-cdn.net/app/uploads/2023/05/fantasy.svg" alt="Fantasy" title="Fantasy">
+                <figcaption style="color: var(--book-tag-accent-color);">Fantasy</figcaption>
+              </figure>
+            </li>
+            <li style="--book-tag-accent-color: #ff3d9d;">
+              <figure>
+                <img src="https://simonteen.b-cdn.net/app/uploads/2023/05/romance.svg" alt="Romance" title="Romance">
+                <figcaption style="color: var(--book-tag-accent-color);">Romance</figcaption>
+              </figure>
+            </li>
+            <li style="--book-tag-accent-color: #ffc400;">
+              <figure>
+                <img src="https://simonteen.b-cdn.net/app/uploads/2023/05/scifi.svg" alt="Science Fiction"
+                  title="Science Fiction">
+                <figcaption style="color: var(--book-tag-accent-color);">Science Fiction</figcaption>
+              </figure>
+            </li>
+            <li style="--book-tag-accent-color: #FDF5D0;">
+              <figure>
+                <img src="https://simonteen.b-cdn.net/app/uploads/2023/05/bestsellers.svg" alt="Bestsellers"
+                  title="Bestsellers">
+                <figcaption style="color: var(--book-tag-accent-color);">Bestsellers</figcaption>
+              </figure>
+            </li>
+            <li style="--book-tag-accent-color: #972d93;">
+              <figure>
+                <img src="https://simonteen.b-cdn.net/app/uploads/2023/05/thriller.svg" alt="Thriller" title="Thriller">
+                <figcaption style="color: var(--book-tag-accent-color);">Thriller</figcaption>
+              </figure>
+            </li>
+            <li style="--book-tag-accent-color: #00d5cb;">
+              <figure>
+                <img src="https://simonteen.b-cdn.net/app/uploads/2023/05/movies.svg" alt="Book to Screen"
+                  title="Book to Screen">
+                <figcaption style="color: var(--book-tag-accent-color);">Book to Screen</figcaption>
+              </figure>
+            </li>
+            <li style="--book-tag-accent-color: #FF4081;">
+              <figure>
+                <img src="https://simonteen.b-cdn.net/app/uploads/2023/05/lgbtq.svg" alt="LGBTQIA+" title="LGBTQIA+">
+                <figcaption style="color: var(--book-tag-accent-color);">LGBTQIA+</figcaption>
+              </figure>
+            </li>
+            <li style="--book-tag-accent-color: #ff8300;">
+              <figure>
+                <img src="https://simonteen.b-cdn.net/app/uploads/2023/05/nonfiction.svg" alt="Nonfiction"
+                  title="Nonfiction">
+                <figcaption style="color: var(--book-tag-accent-color);">Nonfiction</figcaption>
+              </figure>
+            </li>
+          </ul>
+        </nav>
+      </section>
+
+      <!-- Social Media Section -->
+      <v-row justify="center" class="mt-4">
+        <v-btn icon class="mx-4 social-btn rotate-on-hover">
+          <v-icon>mdi-facebook</v-icon>
+        </v-btn>
+        <v-btn icon class="mx-4 social-btn rotate-on-hover">
+          <v-icon>mdi-twitter</v-icon>
+        </v-btn>
+        <v-btn icon class="mx-4 social-btn rotate-on-hover">
+          <v-icon>mdi-email</v-icon>
+        </v-btn>
+        <v-btn icon class="mx-4 social-btn rotate-on-hover">
+          <v-icon>mdi-whatsapp</v-icon>
+        </v-btn>
+      </v-row>
+    </div>
   </v-app>
 </template>
 
-  
-  
 <script>
 export default {
   data() {
@@ -151,52 +230,53 @@ export default {
       books: [
         {
           id: 1,
-          title: "Introduction to Python",
-          author: "Ethem Mining",
-          image: "/images/python.webp",
-          description: "Learn the basics of Python programming with this comprehensive guide.",
+          title: "Julius Caesar",
+          author: "Philip Freeman",
+          image: "/images/juliuss c.jpg",
+          description: "Explore the remarkable life of Julius Caesar, a military genius and political innovator. This biography unveils his journey from a young noble to Rome’s most powerful leader.",
         },
         {
           id: 2,
-          title: "Programming",
-          author: "Alexander Bell",
-          image: "/images/programming.jpg",
-          description: "Deep dive into Programming language features and techniques.",
+          title: "Ulysses",
+          author: "James Joyce",
+          image: "/images/ulysses.jpg",
+          description: "Follow Leopold Bloom’s day-long journey through the streets of Dublin. This modernist masterpiece intricately captures the thoughts, struggles, and emotions of its characters.",
         },
         {
           id: 3,
-          title: "Data Analysis",
-          author: "Ali Abdulhussein",
-          image: "/images/dataanalytic.png",
-          description: "Explore the world of data analysis, machine learning, and statistics.",
+          title: "Harry Potter",
+          author: "J.K Rowling",
+          image: "/images/hp1.webp",
+          description: "Join Harry Potter as he discovers his magical heritage and battles dark forces. The story is filled with friendship, bravery, and the triumph of good over evil.",
         },
         {
           id: 4,
           title: "Cyber Security",
           author: "Mary Manjikian",
           image: "/images/cybersec.webp",
-          description: "A comprehensive guide to protecting digital information and defending against cyber threats in today’s interconnected world.",
+          description: "Learn how to protect sensitive data and stay ahead of cyber threats. This guide delves into practical techniques and critical strategies for a safer digital future.",
         },
         {
           id: 5,
-          title: "Development",
-          author: "Radu Nicoara",
-          image: "/images/webdev.jpg",
-          description: "Learn the essentials of web development, from foundational coding to advanced frameworks, to create dynamic and modern web applications",
+          title: "A Tale Of Two Cities",
+          author: "Charles Dickens",
+          image: "/images/a tale of 2 cities.jpg",
+          description: "Set against the turmoil of the French Revolution, this tale weaves a story of love, sacrifice, and redemption. It captures the dramatic contrasts between London and Paris during this turbulent time.",
         },
         {
           id: 6,
-          title: "Business",
-          author: "S. Christian Albright / Wayne L. Winston",
-          image: "/images/business.jpg",
-          description: "An insightful guide to data-driven decision-making, helping you navigate the complexities of modern business strategies and analytics.",
+          title: "The Deerslayer",
+          author: "James Fenimore Cooper",
+          image: "/images/deerslayer.jpg",
+          description: "Embark on an adventure in the wilderness of early America. This classic tells the story of Natty Bumppo and his courageous exploits on the frontier.",
         },
       ],
     };
   },
 };
 </script>
-  
+
+
 <style>
 .bordered {
   border: 5px solid rgb(11);
@@ -208,8 +288,8 @@ export default {
 }
 
 body {
-  background-color: black; 
-  color: white; 
+  background-color: black;
+  color: white;
 }
 
 .preloader {
@@ -218,11 +298,11 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8); 
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999; 
+  z-index: 9999;
 }
 
 .atom {
@@ -266,6 +346,7 @@ body {
   0% {
     transform: rotateY(70deg) rotateZ(0deg);
   }
+
   100% {
     transform: rotateY(70deg) rotateZ(360deg);
   }
@@ -286,6 +367,7 @@ body {
   0% {
     transform: rotateX(80deg) rotateY(25deg) rotateZ(0deg);
   }
+
   100% {
     transform: rotateX(80deg) rotateY(25deg) rotateZ(360deg);
   }
@@ -306,53 +388,61 @@ body {
   0% {
     transform: rotateX(-80deg) rotateY(25deg) rotateZ(0deg);
   }
+
   100% {
     transform: rotateX(-80deg) rotateY(25deg) rotateZ(360deg);
   }
 }
-  
-h1, p {
+
+h1,
+p {
   color: white;
   padding-bottom: 10px;
 }
 
 .circle-logo {
-  border-radius: 50%; 
-  box-shadow: 0 0 15px rgba(216, 9, 202, 0.8); 
-  animation: breathe 3s ease-in-out infinite, gradient-animation 5s ease infinite; /* Add gradient animation */
-  background: linear-gradient(#c096ff,#b909fe, #f749f1, #0ff); /* Initial gradient */
-  padding: 20px; /* Keep this for padding */
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(216, 9, 202, 0.8);
+  animation: breathe 3s ease-in-out infinite, gradient-animation 5s ease infinite;
+  background: linear-gradient(#c096ff, #b909fe, #f749f1, #0ff);
+  padding: 20px;
 }
 
 @keyframes breathe {
-  0%, 100% {
-    transform: scale(1); 
+
+  0%,
+  100% {
+    transform: scale(1);
   }
+
   50% {
-    transform: scale(1.05); 
+    transform: scale(1.05);
   }
 }
 
 @keyframes gradient-animation {
   0% {
-    background: linear-gradient(#c096ff,#b909fe, #f749f1, #0ff);
+    background: linear-gradient(#c096ff, #b909fe, #f749f1, #0ff);
   }
+
   50% {
-    background: linear-gradient(#0ff, #f749f1, #b909fe, #c096ff); /* Change order for animation */
+    background: linear-gradient(#0ff, #f749f1, #b909fe, #c096ff);
+    /* Change order for animation */
   }
+
   100% {
-    background: linear-gradient(#c096ff,#b909fe, #f749f1, #0ff);
+    background: linear-gradient(#c096ff, #b909fe, #f749f1, #0ff);
   }
 }
 
 .circle-logo:hover {
-  transform: translateY(-5px) rotate(5deg); 
-  transition: transform 1ms ease-in-out; 
+  transform: translateY(-5px) rotate(5deg);
+  transition: transform 1ms ease-in-out;
 }
 
 
 .v-application {
-  background-color: black !important; 
+  background-color: black !important;
 }
 
 .v-card {
@@ -361,14 +451,14 @@ h1, p {
 }
 
 .custom-title {
-  font-size: 25px; 
-  color: plum; 
+  font-size: 25px;
+  color: plum;
   font-weight: bold;
 }
 
-.term-n-use{
-  font-size: 25px; 
-  color: plum; 
+.term-n-use {
+  font-size: 25px;
+  color: plum;
   font-weight: bold;
 }
 
@@ -377,9 +467,9 @@ h1, p {
 }
 
 .book-image {
-  width: 50%;  
-  height: 50%; 
-  object-fit: cover; 
+  width: 50%;
+  height: 50%;
+  object-fit: cover;
 }
 
 .term-n-use {
@@ -401,17 +491,18 @@ h1, p {
 }
 
 .social-btn:hover .v-icon {
-  color: plum; 
+  color: plum;
 }
 
 .social-btn:active .v-icon {
-  color: purple; 
+  color: purple;
 }
 
 @keyframes rotate {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -420,4 +511,62 @@ h1, p {
 .rotate-on-hover:hover {
   animation: rotate 0.5s linear;
 }
-</style> 
+
+.genre-menu {
+  background-color: #212121;
+  padding: 40px;
+}
+
+.genre-menu nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.genre-menu nav ul li {
+  margin: 20px;
+  transition: transform 1.3s ease;
+  animation: slideAnimation 3s linear infinite;
+  flex: 1 1 100px;
+  max-width: 100px;
+}
+
+.genre-menu figure {
+  margin: 0;
+  text-align: center;
+}
+
+.genre-menu img {
+  max-width: 80%;
+  height: auto;
+  transition: transform 0.5s ease;
+}
+
+.genre-menu img:hover {
+  transform: scale(1.1);
+}
+
+.genre-menu figcaption {
+  color: white;
+  font-weight: bold;
+  margin-top: 5px;
+  text-align: center;
+}
+
+@keyframes slideAnimation {
+  0% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(50px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+</style>
