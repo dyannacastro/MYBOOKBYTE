@@ -20,12 +20,18 @@ const mainNav = [
   ['Profile', 'mdi-account'],
 ];
 
+// Updated onLogout function
 const onLogout = async () => {
   const { error } = await supabase.auth.signOut();
   if (error) {
     console.error('Error during logout:', error);
   } else {
-    router.replace('/');
+    // Clear login-related data from localStorage
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userEmail');
+
+    // Redirect to the login page
+    router.replace('/login');
   }
 };
 </script>
