@@ -1,28 +1,154 @@
 <script setup>
-import AppLayout from '@/components/layout/AppLayout.vue'
-import SideNavigation from '@/components/layout/SideNavigation.vue'
-import { useFavoritesStore } from '@/stores/userFavorites'
-import { computed, onMounted } from 'vue'
+import AppLayout from '@/components/layout/AppLayout.vue';
+import SideNavigation from '@/components/layout/SideNavigation.vue';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { supabase } from '@/utils/supabase';
 
-const favoritesStore = useFavoritesStore()
+const isDrawerVisible = ref(false); // Define the `isDrawerVisible` variable here
+const favoriteBooks = ref([]);
+const userEmail = ref(null);
+const userId = ref(null);
+const router = useRouter(); // Import the router to handle redirection
 
-const favoriteBooks = computed(() => favoritesStore.favoriteBooks)
+// Function to fetch the user's favorite books from Supabase
+const fetchFavoritesFromSupabase = async () => {
+  try {
+    console.log('Fetching favorite books for user:', userId.value);
+    const { data, error } = await supabase
+      .from('favorites')
+      .select(`
+        book_id,
+        books (
+          id,
+          title,
+          author,
+          genre,
+          url
+        )
+      `)
+      .eq('user_id', userId.value);
 
-// Function to remove a book from favorites
-const removeFavorite = (id) => {
-  favoritesStore.removeFavorite(id)
-}
+    if (error) {
+      console.error('Error fetching favorites from Supabase:', error.message);
+      return;
+    }
 
-// Function to handle the reading of a book
+    if (data && data.length > 0) {
+      console.log('Successfully fetched favorite books:', data);
+      favoriteBooks.value = data.map(fav => ({
+        id: fav.books.id,
+        title: fav.books.title,
+        author: fav.books.author,
+        genre: fav.books.genre,
+        coverImage: fav.books.url,
+      }));
+    } else {
+      console.log('No favorite books found for user.');
+    }
+  } catch (err) {
+    console.error('Error fetching favorites:', err.message);
+  }
+};
+
+// Function to add a book to Supabase favorites
+const addFavoriteToSupabase = async (book) => {
+  try {
+    console.log('Attempting to add book to favorites:', book);
+    if (!userId.value) {
+      throw new Error('User is not authenticated');
+    }
+
+    const { error } = await supabase
+      .from('favorites')
+      .insert([
+        {
+          user_id: userId.value,
+          book_id: book.id,
+        }
+      ]);
+
+    if (error) {
+      console.error('Error inserting to Supabase:', error.message);
+      return;
+    }
+
+    console.log('Book successfully added to favorites:', book);
+    favoriteBooks.value.push(book);
+  } catch (err) {
+    console.error('Error adding favorite:', err.message);
+  }
+};
+
+// Function to remove a book from Supabase favorites
+const removeFavoriteFromSupabase = async (id) => {
+  try {
+    console.log('Attempting to remove book from favorites with ID:', id);
+    if (!userId.value) {
+      throw new Error('User is not authenticated');
+    }
+
+    const { error } = await supabase
+      .from('favorites')
+      .delete()
+      .eq('user_id', userId.value)
+      .eq('book_id', id);
+
+    if (error) {
+      console.error('Error deleting from Supabase:', error.message);
+      return;
+    }
+
+    console.log('Book successfully removed from favorites with ID:', id);
+    favoriteBooks.value = favoriteBooks.value.filter(book => book.id !== id);
+  } catch (err) {
+    console.error('Error removing favorite:', err.message);
+  }
+};
+
+// Function to handle adding/removing favorites
+const toggleFavorite = (book) => {
+  const index = favoriteBooks.value.findIndex(favBook => favBook.id === book.id);
+  if (index === -1) {
+    addFavoriteToSupabase(book);
+  } else {
+    removeFavoriteFromSupabase(book.id);
+  }
+};
+
+// Function to handle reading a book
 const readBook = (id) => {
   console.log(`Read book with id: ${id}`);
-}
+};
 
 // On component mounted, check if user is logged in and load their favorites
-onMounted(() => {
-  const userEmail = localStorage.getItem('userEmail');
-  if (userEmail) {
-    favoritesStore.setUser(userEmail);
+onMounted(async () => {
+  try {
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error('Error fetching user session:', error.message);
+      router.push('/login'); // Redirect to login page if user session could not be retrieved
+      return;
+    }
+
+    if (data?.session?.user) {
+      const user = data.session.user;
+      userEmail.value = user.email;
+      userId.value = user.id;
+
+      console.log('User email found:', user.email);
+      console.log('User ID fetched successfully:', user.id);
+
+      // Fetch the user's favorite books
+      await fetchFavoritesFromSupabase();
+    } else {
+      console.error('No user found, unable to load favorites.');
+      router.push('/login'); // Redirect to login page if the user is not authenticated
+    }
+  } catch (err) {
+    console.error('Unexpected error while loading favorites:', err.message);
+    router.push('/login'); // Redirect to login page if an unexpected error occurs
   }
 });
 </script>
@@ -42,7 +168,6 @@ onMounted(() => {
           </v-btn>
         </h1>
 
-
         <v-row dense>
           <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" sm="6" md="4">
             <v-card>
@@ -52,7 +177,7 @@ onMounted(() => {
               <v-card-actions class="d-flex justify-center">
                 <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(book.id)">Read</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn icon color="purple" dark class="glow mx-2 mt-5" @click="removeFavorite(book.id)">
+                <v-btn icon color="purple" dark class="glow mx-2 mt-5" @click="toggleFavorite(book)">
                   <v-icon>mdi-heart</v-icon>
                 </v-btn>
               </v-card-actions>
@@ -64,6 +189,11 @@ onMounted(() => {
     </template>
   </AppLayout>
 </template>
+
+<style scoped>
+/* Your existing styles */
+</style>
+
 
 <style scoped>
 @keyframes pop {
