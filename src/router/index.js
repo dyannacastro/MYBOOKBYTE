@@ -5,10 +5,12 @@ import IndexView from '@/views/auth/IndexView.vue';
 import DashboardView from '@/views/system/DashboardView.vue';
 import FavoritesView from '@/views/system/FavoritesView.vue';
 import ProfileView from '@/views/system/ProfileView.vue';
+import { supabase } from '@/utils/supabase'; // Ensure Supabase is imported correctly
 
 // Helper function to check if the user is authenticated
-const isAuthenticated = () => {
-  return localStorage.getItem('loggedIn') === 'true';
+const isAuthenticated = async () => {
+  const { data } = await supabase.auth.getSession();
+  return data.session !== null; // User is authenticated if session is not null
 };
 
 const router = createRouter({
@@ -18,9 +20,9 @@ const router = createRouter({
       path: '/',
       name: 'index',
       component: IndexView,
-      beforeEnter: (to, from, next) => {
+      beforeEnter: async (to, from, next) => {
         // Redirect to dashboard if user is logged in
-        if (isAuthenticated()) {
+        if (await isAuthenticated()) {
           next({ name: 'dashboard' });
         } else {
           next();
@@ -31,9 +33,9 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-      beforeEnter: (to, from, next) => {
+      beforeEnter: async (to, from, next) => {
         // Redirect to dashboard if user is logged in
-        if (isAuthenticated()) {
+        if (await isAuthenticated()) {
           next({ name: 'dashboard' });
         } else {
           next();
@@ -44,9 +46,9 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterView,
-      beforeEnter: (to, from, next) => {
+      beforeEnter: async (to, from, next) => {
         // Redirect to dashboard if user is logged in
-        if (isAuthenticated()) {
+        if (await isAuthenticated()) {
           next({ name: 'dashboard' });
         } else {
           next();
@@ -75,10 +77,10 @@ const router = createRouter({
 });
 
 // Global navigation guard to enforce authentication
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // If the route requires authentication and the user isn't logged in, redirect to login
-    if (!isAuthenticated()) {
+    if (!(await isAuthenticated())) {
       next({ name: 'login' });
     } else {
       next();

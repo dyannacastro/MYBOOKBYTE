@@ -1,17 +1,19 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-
-const user = ref({
-  name: 'Dyanna Castro',
-  email: 'ddanna@gmail.com',
-  profilePicture: '/images/profilleee.jpg', // Default profile picture
-  coverPhoto: '/images/default-cover.jpg', // Default cover photo
-  about: 'I love reading books and learning new things!',
-});
+import { supabase } from '@/utils/supabase'; // Ensure Supabase is imported correctly
 
 const router = useRouter();
 
+// Reactive object to store user profile data
+const user = ref({
+  displayName: '',
+  email: '',
+  profilePicture: '/images/profile.jpg', // Default profile picture
+  coverPhoto: '/images/cover.webp', // Default cover photo
+});
+
+// Function to handle profile picture or cover photo change
 // To handle the profile and cover image updates
 const profileImage = ref(user.value.profilePicture);
 const coverImage = ref(user.value.coverPhoto);
@@ -54,6 +56,64 @@ onMounted(() => {
     coverImage.value = user.value.coverPhoto;
   }
 });
+
+// On component mount, load the profile from Supabase
+onMounted(async () => {
+  try {
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
+
+    if (sessionError) {
+      console.error('Error fetching session:', sessionError);
+      return;
+    }
+
+    const userId = session?.user?.id;
+    if (!userId) {
+      console.error('User is not logged in.');
+      return;
+    }
+
+    // Fetch user data from Supabase auth (user metadata)
+    const { data: userData, error: userFetchError } = await supabase.auth.getUser();
+
+    if (userFetchError) {
+      console.error('Error fetching user details:', userFetchError);
+      return;
+    }
+
+    if (userData?.user) {
+      user.value.displayName = userData.user.user_metadata?.display_name || 'No Name';
+      user.value.email = userData.user.email || '';
+    } else {
+      console.error('No user data found in session.');
+      return;
+    }
+
+    // Fetch profile from the user_profile table (images, etc.)
+    const { data, error: profileFetchError } = await supabase
+      .from('user_profile')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (profileFetchError) {
+      console.error('Error fetching profile:', profileFetchError);
+    } else if (data) {
+      user.value.profilePicture = data.img || user.value.profilePicture;
+      user.value.coverPhoto = data.cover_img || user.value.coverPhoto;
+
+      // Update image references
+      profileImage.value = user.value.profilePicture;
+      coverImage.value = user.value.coverPhoto;
+      console.log('Profile fetched successfully!', data);
+    } 
+  } catch (err) {
+    console.error('Unexpected error while fetching profile:', err);
+  }
+});
 </script>
 
 <template>
@@ -64,31 +124,31 @@ onMounted(() => {
       <label for="cover-upload" class="cover-change-icon">
         <i class="mdi mdi-pencil"></i>
       </label>
-      <input type="file" id="cover-upload" @change="(e) => handleImageChange(e, 'cover')" class="image-input"
-        accept="image/*" />
+      <input type="file" id="cover-upload" @change="(e) => handleImageChange(e, 'cover')" class="image-input" accept="image/*" />
     </div>
 
+    <!-- Profile Picture Section -->
     <div class="profile-picture-container">
       <img :src="profileImage" alt="Profile Picture" class="profile-picture" />
       <label for="image-upload" class="image-change-icon">
         <i class="mdi mdi-pencil"></i>
       </label>
-      <input type="file" id="image-upload" @change="(e) => handleImageChange(e, 'profile')" class="image-input"
-        accept="image/*" />
+      <input type="file" id="image-upload" @change="(e) => handleImageChange(e, 'profile')" class="image-input" accept="image/*" />
     </div>
 
+    <!-- Display User's Display Name -->
     <div class="user-details">
-      <h2>{{ user.name }}</h2>
-      <p>{{ user.email }}</p>
-      <p>{{ user.about }}</p>
+      <h3>{{ user.displayName }}</h3>
     </div>
 
+    <!-- Back Button -->
     <div class="button-container">
-      <button @click="goBack" class="edit-button"><v-icon dark left>
-          mdi-arrow-left
-        </v-icon>Back</button>
-      <button @click="saveProfile" class="save-button">Save Profile</button>
-
+      <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
+        <v-icon dark left>mdi-arrow-left</v-icon>Back
+      </v-btn>
+      <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
+        <v-icon dark left>mdi-content-save</v-icon>Save Profile
+      </v-btn>
     </div>
   </div>
 </template>
@@ -175,47 +235,25 @@ onMounted(() => {
   display: none;
 }
 
-.user-details h2 {
+.user-details h3 {
   margin: 8px 0;
-  color: #3f51b5;
-}
-
-.user-details p {
-  margin: 4px 0;
-  color: #666;
+  color: purple;
 }
 
 .button-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
   margin-top: 16px;
 }
 
-.save-button,
-.edit-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  color: #fff;
-  border: none;
+.bordered {
   border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
+  padding: 8px;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
-.save-button {
-  background-color: purple;
-}
-
-.save-button:hover {
-  background-color: rgb(76, 11, 76);
-}
-
-.edit-button {
-  background-color: mediumturquoise;
-}
-
-.edit-button:hover {
-  background-color: rgb(17, 87, 84);
+.bordered:hover {
+  box-shadow: 0 0 10px 8px rgba(186, 104, 200, 1);
 }
 </style>
