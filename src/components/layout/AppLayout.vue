@@ -68,7 +68,6 @@ onMounted(() => {
           </template>
         </v-list-item>
         <v-spacer></v-spacer>
-        <ProfileHeader v-if="isLoggedIn" />
       </v-app-bar>
 
 

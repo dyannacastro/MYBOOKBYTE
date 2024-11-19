@@ -31,7 +31,7 @@ const onLogout = async () => {
     localStorage.removeItem('userEmail');
 
     // Redirect to the login page
-    router.replace('/login');
+    router.replace('/');
   }
 };
 </script>
