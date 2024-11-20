@@ -58,23 +58,30 @@ const typeText = async () => {
 const fetchAllBooks = async () => {
   loading.value = true
   error.value = null
+  const processedBooks = new Set() // To track books that have already been added
+
   try {
     const requests = genres.value.map(genre =>
       axios.get(`https://openlibrary.org/subjects/${genre}.json`),
     )
     const responses = await Promise.all(requests)
 
-    allBooks.value = responses.flatMap((response, index) =>
-      response.data.works.map(book => ({
-        title: book.title,
-        src: book.cover_id
-          ? `https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg`
-          : 'default-image.jpg',
-        id: book.key,
-        genre: genres.value[index],
-        flex: 4,
-      })),
-    )
+    allBooks.value = responses.flatMap((response, index) => {
+      return response.data.works
+        .filter(book => !processedBooks.has(book.key)) // Include only unprocessed books
+        .map(book => {
+          processedBooks.add(book.key) // Mark book as processed
+          return {
+            title: book.title,
+            src: book.cover_id
+              ? `https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg`
+              : 'default-image.jpg',
+            id: book.key,
+            genre: genres.value[index],
+            flex: 4,
+          }
+        })
+    })
   } catch (err) {
     error.value = 'Failed to load books. Please try again later.'
   } finally {
