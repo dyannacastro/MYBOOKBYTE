@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useFavoritesStore } from '@/stores/userFavorites';
 import { supabase } from '@/utils/supabase'; // Import the Supabase instance
 
+<<<<<<< HEAD
 const isDrawerVisible = ref(true);
 const tabs = ref('fiction');
 const cards = ref([]);
@@ -13,25 +14,59 @@ const loading = ref(false);
 const error = ref(null);
 const showAlert = ref(false); // Used for Snackbar visibility
 const alertMessage = ref(''); // Snackbar message
+=======
+const isDrawerVisible = ref(true)
+const tabs = ref('fiction')
+const cards = ref([]) // Currently displayed books based on the selected genre
+const allBooks = ref([]) // All books across genres for global search
+const searchQuery = ref('')
+const loading = ref(false)
+const error = ref(null)
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
 
 const genres = ref([
-  'fiction', 'education', 'fantasy',
-  'psychology', 'sociology', 'adventure',
-  'mystery', 'romance', 'self-help', 'thriller', 'cookbooks'
-]);
+  'fiction',
+  'education',
+  'fantasy',
+  'psychology',
+  'sociology',
+  'adventure',
+  'mystery',
+  'romance',
+  'self-help',
+  'thriller',
+  'cookbooks',
+])
 
 const favoritesStore = useFavoritesStore();
 
+<<<<<<< HEAD
 // Function to get user ID
 const getUserId = async () => {
   const { data, error } = await supabase.auth.getSession();
   if (error) {
     console.error('Error getting user session:', error.message);
     return null;
+=======
+const isFavorite = book =>
+  favoritesStore.favoriteBooks.some(fav => fav.id === book.id)
+
+const toggleFavorite = book => {
+  if (isFavorite(book)) {
+    favoritesStore.removeFavorite(book.id)
+  } else {
+    favoritesStore.addFavorite({
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      coverImage: book.src,
+    })
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
   }
   return data?.session?.user?.id || null;
 };
 
+<<<<<<< HEAD
 // Function to fetch user's favorites when the component is mounted
 const fetchUserFavorites = async () => {
   try {
@@ -171,9 +206,19 @@ const typeText = async () => {
   for (let i = 0; i < fullText.length; i++) {
     displayedText.value += fullText[i];
     await new Promise((resolve) => setTimeout(resolve, 100));
+=======
+const fullText = 'What book do you want to search today?'
+const displayedText = ref('')
+
+const typeText = async () => {
+  for (let i = 0; i < fullText.length; i++) {
+    displayedText.value += fullText[i]
+    await new Promise(resolve => setTimeout(resolve, 100))
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
   }
 };
 
+<<<<<<< HEAD
 // Function to fetch books from the API and insert them into the Supabase books table
 const fetchItems = async (genre) => {
   loading.value = true;
@@ -187,11 +232,60 @@ const fetchItems = async (genre) => {
 
     // Map the response data to match the local cards structure
     cards.value = response.data.works.map((book) => ({
+=======
+// Fetch all books from all genres for global search
+const fetchAllBooks = async () => {
+  loading.value = true
+  error.value = null
+  const processedBooks = new Set() // To track books that have already been added
+
+  try {
+    const requests = genres.value.map(genre =>
+      axios.get(`https://openlibrary.org/subjects/${genre}.json`),
+    )
+    const responses = await Promise.all(requests)
+
+    allBooks.value = responses.flatMap((response, index) => {
+      return response.data.works
+        .filter(book => !processedBooks.has(book.key)) // Include only unprocessed books
+        .map(book => {
+          processedBooks.add(book.key) // Mark book as processed
+          return {
+            title: book.title,
+            src: book.cover_id
+              ? `https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg`
+              : 'default-image.jpg',
+            id: book.key,
+            genre: genres.value[index],
+            flex: 4,
+          }
+        })
+    })
+  } catch (err) {
+    error.value = 'Failed to load books. Please try again later.'
+  } finally {
+    loading.value = false
+  }
+}
+
+// Fetch books for the currently selected genre
+const fetchGenreBooks = async genre => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await axios.get(
+      `https://openlibrary.org/subjects/${genre}.json`,
+    )
+    cards.value = response.data.works.map(book => ({
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
       title: book.title,
-      src: book.cover_id ? `https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg` : 'default-image.jpg',
+      src: book.cover_id
+        ? `https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg`
+        : 'default-image.jpg',
       id: book.key,
       author: book.authors?.[0]?.name || 'Unknown Author',
       flex: 4,
+<<<<<<< HEAD
     }));
 
     // Transform the books data to match the Supabase table structure
@@ -218,20 +312,32 @@ const fetchItems = async (genre) => {
   } catch (error) {
     error.value = 'Failed to load items. Please try again later.';
     console.error('Error fetching books:', error);
+=======
+    }))
+  } catch (err) {
+    error.value = 'Failed to load items. Please try again later.'
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
   } finally {
     loading.value = false;
     console.log("Finished fetching books, loading:", loading.value);
   }
 };
 
+<<<<<<< HEAD
 // Watch the `tabs` variable for changes and fetch new items when the genre changes
 watch(tabs, (newGenre) => {
   console.log(`Genre changed to: ${newGenre}`);
   fetchItems(newGenre);
 });
+=======
+watch(tabs, newGenre => {
+  fetchGenreBooks(newGenre)
+})
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
 
 // Fetch items and run typing animation when the component is mounted
 onMounted(() => {
+<<<<<<< HEAD
   console.log("Component mounted, starting type text animation and fetching books.");
   typeText();
   fetchItems(tabs.value);
@@ -244,6 +350,19 @@ const filteredCards = computed(() => {
     card.title.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
+=======
+  typeText()
+  fetchAllBooks()
+  fetchGenreBooks(tabs.value)
+})
+
+// Filtered cards for the search bar to access all books
+const filteredCards = computed(() => {
+  return allBooks.value.filter(book =>
+    book.title.toLowerCase().includes(searchQuery.value.toLowerCase()),
+  )
+})
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
 </script>
 
 
@@ -268,66 +387,143 @@ export default {
 </script>
 
 <template>
-  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
+  <AppLayout
+    :is-with-app-bar-nav-icon="true"
+    @is-drawer-visible="isDrawerVisible = !isDrawerVisible"
+  >
     <template #content>
       <v-container class="dashboard">
         <h3 class="gradient-text"></h3>
 
+<<<<<<< HEAD
         <!-- Carousel Section -->
         <v-carousel cycle height="400" hide-arrows hide-delimiters :interval="4000">
+=======
+        <v-carousel
+          cycle
+          height="400"
+          hide-arrows
+          hide-delimiters
+          :interval="4000"
+        >
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
           <v-carousel-item v-for="(slide, i) in slides" :key="i">
-            <v-img :src="slide.image" height="100%">
-              <v-row class="fill-height" align="center" justify="center"></v-row>
-            </v-img>
+            <v-img :src="slide.image" height="100%"></v-img>
           </v-carousel-item>
         </v-carousel>
 
+<<<<<<< HEAD
         <!-- Search Bar Section -->
+=======
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
         <v-row justify="center">
           <v-col cols="12" sm="8" md="6" class="search">
-            <h2 class="text my-4 text-center">{{ displayedText }}</h2> <!-- Typing effect -->
-            <v-text-field v-model="searchQuery" label="Search by title" prepend-inner-icon="mdi-magnify" clearable
-              class="mx-auto rounded-pill-search" :loading="loading" color="#E1BEE7">
-            </v-text-field>
+            <h2 class="text my-4 text-center">{{ displayedText }}</h2>
+            <v-text-field
+              v-model="searchQuery"
+              label="Search by title"
+              prepend-inner-icon="mdi-magnify"
+              clearable
+              class="mx-auto rounded-pill-search"
+              :loading="loading"
+              color="#E1BEE7"
+            ></v-text-field>
           </v-col>
         </v-row>
 
+<<<<<<< HEAD
         <!-- Genres Section -->
         <h3 class="gradient-text my-4 ">BOOK GENRES</h3>
+=======
+        <h3 class="gradient-text my-4">BOOK GENRES</h3>
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
         <v-row justify="center" class="genre-icons my-4">
-          <v-col v-for="genre in genres" :key="genre" cols="12" sm="6" md="4" lg="3">
-            <v-btn class="genre-icon gradient-button" :class="{ active: tabs === genre }" @click="tabs = genre"
-              elevation="2" block rounded>
+          <v-col
+            v-for="genre in genres"
+            :key="genre"
+            cols="12"
+            sm="6"
+            md="4"
+            lg="3"
+          >
+            <v-btn
+              class="genre-icon gradient-button"
+              :class="{ active: tabs === genre }"
+              @click="tabs = genre"
+              elevation="2"
+              block
+              rounded
+            >
               {{ genre.charAt(0).toUpperCase() + genre.slice(1) }}
             </v-btn>
           </v-col>
         </v-row>
 
         <v-divider></v-divider>
+<<<<<<< HEAD
 
         <!-- Search Results Section -->
         <h3 class="gradient-text my-4 ">SEARCH RESULTS</h3>
+=======
+        <h3 class="gradient-text my-4">SEARCH RESULTS</h3>
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
         <v-row dense>
           <v-col v-if="loading" cols="12" class="text-center">
-            <v-progress-circular indeterminate color="purple" class="ma-3"></v-progress-circular>
+            <v-progress-circular
+              indeterminate
+              color="purple"
+              class="ma-3"
+            ></v-progress-circular>
             <p class="loading-text">Loading books...</p>
           </v-col>
+<<<<<<< HEAD
           <v-col v-else v-for="card in filteredCards" :key="card.id" :cols="12" sm="6" md="4" lg="3">
+=======
+          <v-col
+            v-else
+            v-for="card in searchQuery ? filteredCards : cards"
+            :key="card.id"
+            :cols="12"
+            sm="6"
+            md="4"
+            lg="3"
+          >
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
             <v-card class="heart mt-15">
-              <v-img :src="card.src" class="white--text align-end" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                height="200px"></v-img>
-              <v-card-title v-text="card.title" class="card-title"></v-card-title>
+              <v-img
+                :src="card.src"
+                class="white--text align-end"
+                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                height="200px"
+              ></v-img>
+              <v-card-title
+                v-text="card.title"
+                class="card-title"
+              ></v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
+<<<<<<< HEAD
                 <v-btn color="white" dark class="bordered mx-2 mt-5" icon @click="toggleFavorite(card)">
                   <v-icon :color="isFavorite(card.id) ? 'purple' : ''">mdi-heart</v-icon>
+=======
+                <v-btn
+                  color="white"
+                  dark
+                  class="bordered mx-2 mt-5"
+                  icon
+                  @click="toggleFavorite(card)"
+                >
+                  <v-icon :color="isFavorite(card) ? 'purple' : ''"
+                    >mdi-heart</v-icon
+                  >
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
-
         <p v-if="error" class="error">{{ error }}</p>
+<<<<<<< HEAD
 
         <!-- Snackbar Alert -->
         <v-snackbar
@@ -339,6 +535,8 @@ export default {
           {{ alertMessage }}
           <v-btn color="pink" text @click="showAlert = false">Close</v-btn>
         </v-snackbar>
+=======
+>>>>>>> 696f0a725f0dfcd5420ae6c219d4efdff1878323
       </v-container>
     </template>
   </AppLayout>
@@ -418,7 +616,14 @@ export default {
 }
 
 .genre-icon.active {
-  background: linear-gradient(45deg, #b909fe, #64c0ce, #64c0ce, #64c0ce, #b909fe);
+  background: linear-gradient(
+    45deg,
+    #b909fe,
+    #64c0ce,
+    #64c0ce,
+    #64c0ce,
+    #b909fe
+  );
 }
 
 .genre-icon:not(.active) {
