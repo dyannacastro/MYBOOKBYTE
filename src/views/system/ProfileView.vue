@@ -160,7 +160,7 @@ onMounted(async () => {
 
         <div class="button-container">
           <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
-            <v-icon dark left>mdi-arrow-left</v-icon>back
+            <v-icon dark left>mdi-arrow-left</v-icon>Back
           </v-btn>
           <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
             <v-icon dark left>mdi-content-save </v-icon> Save Profile
