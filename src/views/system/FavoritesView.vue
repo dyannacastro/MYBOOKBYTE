@@ -5,61 +5,89 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '@/utils/supabase';
 
-const isDrawerVisible = ref(false); // Define the `isDrawerVisible` variable here
+const isDrawerVisible = ref(false);
 const favoriteBooks = ref([]);
 const userEmail = ref(null);
 const userId = ref(null);
-const router = useRouter(); // Import the router to handle redirection
+const router = useRouter(); 
 
 // Function to fetch the user's favorite books from Supabase
 const fetchFavoritesFromSupabase = async () => {
   try {
-    console.log('Fetching favorite books for user:', userId.value);
-    const { data, error } = await supabase
-      .from('favorites')
-      .select(`
-        book_id,
-        books (
-          id,
-          title,
-          author,
-          genre,
-          url
-        )
-      `)
-      .eq('user_id', userId.value);
-
-    if (error) {
-      console.error('Error fetching favorites from Supabase:', error.message);
+    if (!userId.value) {
+      console.error('No user ID available, unable to fetch favorites.');
       return;
     }
 
-    if (data && data.length > 0) {
-      console.log('Successfully fetched favorite books:', data);
-      favoriteBooks.value = data.map(fav => ({
-        id: fav.books.id,
-        title: fav.books.title,
-        author: fav.books.author,
-        genre: fav.books.genre,
-        coverImage: fav.books.url,
-      }));
+    console.log('Fetching favorite books for user ID:', userId.value);
+
+    const { data: favoriteData, error: fetchError } = await supabase
+      .from('favorites')
+      .select('book_id');
+
+    if (fetchError) {
+      console.error('Error fetching favorites from Supabase:', fetchError.message, fetchError.details);
+      return;
+    }
+
+    console.log('Favorite entries fetched from Supabase:', favoriteData);
+
+    // If there are favorites, fetch details from the books table
+    if (favoriteData && favoriteData.length > 0) {
+      favoriteBooks.value = []; // Clear current favorites
+
+      for (const favorite of favoriteData) {
+        const bookId = favorite.book_id;
+        console.log('Fetching book details for Book ID:', bookId);
+
+        const { data: bookData, error: bookError } = await supabase
+          .from('books')
+          .select('*')
+          .eq('id', bookId)
+          .single();
+
+        if (bookError) {
+          console.error('Error fetching book details from Supabase:', bookError.message, bookError.details);
+          continue; // Skip if there's an issue fetching this book
+        }
+
+        console.log('Book details fetched:', bookData);
+
+        if (bookData) {
+          favoriteBooks.value.push({
+            id: bookData.id,
+            title: bookData.title,
+            author: bookData.author,
+            coverImage: bookData.cover_image,
+          });
+        }
+      }
     } else {
       console.log('No favorite books found for user.');
+      favoriteBooks.value = [];
     }
   } catch (err) {
-    console.error('Error fetching favorites:', err.message);
+    console.error('Unexpected error while fetching favorites:', err.message);
   }
 };
 
 // Function to add a book to Supabase favorites
 const addFavoriteToSupabase = async (book) => {
   try {
-    console.log('Attempting to add book to favorites:', book);
     if (!userId.value) {
-      throw new Error('User is not authenticated');
+      console.error('User is not authenticated. User ID is missing.');
+      return;
     }
 
-    const { error } = await supabase
+    if (!book || !book.id) {
+      console.error('Invalid book data. Book object or book ID is missing.');
+      return;
+    }
+
+    console.log('Attempting to add book to favorites:', book);
+
+    // Insert favorite into Supabase
+    const { data, error } = await supabase
       .from('favorites')
       .insert([
         {
@@ -69,24 +97,28 @@ const addFavoriteToSupabase = async (book) => {
       ]);
 
     if (error) {
-      console.error('Error inserting to Supabase:', error.message);
+      console.error('Error inserting favorite to Supabase:', error.message, error.details);
       return;
     }
 
-    console.log('Book successfully added to favorites:', book);
+    console.log('Book successfully added to favorites in Supabase:', data);
+
+    // Update local state to reflect added favorite
     favoriteBooks.value.push(book);
+    console.log('Updated favoriteBooks list after addition:', favoriteBooks.value);
   } catch (err) {
-    console.error('Error adding favorite:', err.message);
+    console.error('Unexpected error while adding favorite:', err.message);
   }
 };
 
 // Function to remove a book from Supabase favorites
 const removeFavoriteFromSupabase = async (id) => {
   try {
-    console.log('Attempting to remove book from favorites with ID:', id);
     if (!userId.value) {
       throw new Error('User is not authenticated');
     }
+
+    console.log('Attempting to remove book from favorites with ID:', id);
 
     const { error } = await supabase
       .from('favorites')
@@ -95,12 +127,15 @@ const removeFavoriteFromSupabase = async (id) => {
       .eq('book_id', id);
 
     if (error) {
-      console.error('Error deleting from Supabase:', error.message);
+      console.error('Error deleting from Supabase:', error.message, error.details);
       return;
     }
 
     console.log('Book successfully removed from favorites with ID:', id);
+
+    // Update local state to reflect removed favorite
     favoriteBooks.value = favoriteBooks.value.filter(book => book.id !== id);
+    console.log('Updated favoriteBooks list after removal:', favoriteBooks.value);
   } catch (err) {
     console.error('Error removing favorite:', err.message);
   }
@@ -110,10 +145,17 @@ const removeFavoriteFromSupabase = async (id) => {
 const toggleFavorite = (book) => {
   const index = favoriteBooks.value.findIndex(favBook => favBook.id === book.id);
   if (index === -1) {
+    console.log('Book not found in favorites, adding:', book);
     addFavoriteToSupabase(book);
   } else {
+    console.log('Book found in favorites, removing:', book.id);
     removeFavoriteFromSupabase(book.id);
   }
+};
+
+// Function to check if a book is a favorite
+const isFavorite = (book) => {
+  return favoriteBooks.value.some(favBook => favBook.id === book.id);
 };
 
 // Function to handle reading a book
@@ -163,7 +205,7 @@ onMounted(async () => {
       <v-container>
         <h1 class="text-right my-4">
           <span class="gradient-text">MY FAVORITES</span>
-          <v-btn icon color="black" dark class="fav-icon mx-2">
+          <v-btn icon color="black" dark class="fav-icon mx-6">
             <v-icon color="purple">mdi-heart</v-icon>
           </v-btn>
         </h1>
@@ -178,7 +220,7 @@ onMounted(async () => {
                 <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(book.id)">Read</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn icon color="purple" dark class="glow mx-2 mt-5" @click="toggleFavorite(book)">
-                  <v-icon>mdi-heart</v-icon>
+                  <v-icon :color="isFavorite(book) ? 'purple' : ''">mdi-heart</v-icon>
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -191,18 +233,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* Your existing styles */
-</style>
-
-
-<style scoped>
 @keyframes pop {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: scale(1);
   }
-
   50% {
     transform: scale(1.1);
   }
@@ -270,11 +304,11 @@ onMounted(async () => {
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, #64c0ce, #b909fe, #64c0ce);
+  background: linear-gradient(45deg,#000, plum, #262626, #b408a3cf, #64c0ce, #000);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   animation: gradient-animation 3s ease infinite;
 }
 
@@ -282,11 +316,9 @@ onMounted(async () => {
   0% {
     background-position: 0% 50%;
   }
-
   50% {
     background-position: 100% 50%;
   }
-
   100% {
     background-position: 0% 50%;
   }
