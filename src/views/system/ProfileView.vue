@@ -1,8 +1,8 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import AppLayout from '@/components/layout/AppLayout.vue';
-import SideNavigation from '@/components/layout/SideNavigation.vue';
+// import AppLayout from '@/components/layout/AppLayout.vue';
+// import SideNavigation from '@/components/layout/SideNavigation.vue';
 import { supabase } from '@/utils/supabase'; 
 
 const router = useRouter();
@@ -130,13 +130,13 @@ onMounted(async () => {
 });
 </script>
 
-<template>
-  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
+<!-- <template> -->
+  <!-- <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
     <template #navigation>
       <SideNavigation :is-drawer-visible="isDrawerVisible"></SideNavigation>
-    </template>
+    </template> -->
 
-    <template #content>
+    <template>
       <div class="profile-container">
         <div class="cover-photo-container">
           <img :src="coverImage" alt="Set Cover Photo" class="cover-photo text-center" />
@@ -168,8 +168,8 @@ onMounted(async () => {
         </div>
       </div>
     </template>
-  </AppLayout>
-</template>
+  <!-- </AppLayout> -->
+<!-- </template> -->
 
 <style scoped>
 .profile-container {
