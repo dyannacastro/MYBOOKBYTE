@@ -1,19 +1,19 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import { supabase } from '@/utils/supabase'; // Ensure Supabase is imported correctly
+import AppLayout from '@/components/layout/AppLayout.vue';
+import SideNavigation from '@/components/layout/SideNavigation.vue';
+import { supabase } from '@/utils/supabase'; 
 
 const router = useRouter();
 
 const user = ref({
   displayName: '',
   email: '',
-  profilePicture: '/images/profile.jpg', // Default profile picture
-  coverPhoto: '/images/cover.webp', // Default cover photo
+  profilePicture: '/images/profile.jpg', 
+  coverPhoto: '/images/cover.webp', 
 });
 
-// Function to handle profile picture or cover photo change
-// To handle the profile and cover image updates
 const profileImage = ref(user.value.profilePicture);
 const coverImage = ref(user.value.coverPhoto);
 
@@ -23,61 +23,78 @@ const handleImageChange = (event, type) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       if (type === 'profile') {
-        profileImage.value = reader.result; // Update profile picture
+        profileImage.value = reader.result; 
       } else if (type === 'cover') {
-        coverImage.value = reader.result; // Update cover photo
+        coverImage.value = reader.result; 
       }
     };
     reader.readAsDataURL(file);
   }
 };
 
-// Function to save the profile (to localStorage)
-const saveProfile = () => {
-  user.value.profilePicture = profileImage.value;
-  user.value.coverPhoto = coverImage.value;
-  localStorage.setItem('userProfile', JSON.stringify(user.value)); // Save to localStorage
-  console.log('Profile saved!', user.value);
-};
-
-// Function to go back to the dashboard
-const goBack = () => {
-  router.push({ name: 'dashboard' });
-};
-
-// On component mount, load the profile from localStorage if it exists
-onMounted(() => {
-  const storedProfile = localStorage.getItem('userProfile');
-  if (storedProfile) {
-    user.value = JSON.parse(storedProfile);
-    profileImage.value = user.value.profilePicture;
-    coverImage.value = user.value.coverPhoto;
-  }
-});
-
-onMounted(async () => {
-  resetUserProfileToDefaults();
-
+const saveProfile = async () => {
   try {
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
-
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) {
       console.error('Error fetching session:', sessionError);
       return;
     }
 
-    const userId = session?.user?.id;
+    const userId = sessionData?.session?.user?.id;
     if (!userId) {
       console.error('User is not logged in.');
       return;
     }
 
-    // Fetch user data from Supabase auth (user metadata)
-    const { data: userData, error: userFetchError } = await supabase.auth.getUser();
+    const updates = {
+      user_id: userId,
+      img: profileImage.value,
+      cover_img: coverImage.value,
+    };
 
+    const { error } = await supabase.from('user_profile').upsert(updates, { onConflict: ['user_id'] });
+    if (error) {
+      console.error('Error saving profile:', error);
+    } else {
+      console.log('Profile saved successfully!', user.value);
+    }
+  } catch (err) {
+    console.error('Unexpected error while saving profile:', err);
+  }
+};
+
+const goBack = () => {
+  router.push({ name: 'dashboard' });
+};
+
+const resetUserProfileToDefaults = () => {
+  user.value = {
+    displayName: '',
+    email: '',
+    profilePicture: '/images/profile.jpg',
+    coverPhoto: '/images/cover.webp',
+  };
+  profileImage.value = user.value.profilePicture;
+  coverImage.value = user.value.coverPhoto;
+};
+
+onMounted(async () => {
+  resetUserProfileToDefaults();
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      console.error('Error fetching session:', sessionError);
+      return;
+    }
+
+    const userId = sessionData?.session?.user?.id;
+    if (!userId) {
+      console.error('User is not logged in.');
+      return;
+    }
+
+    const { data: userData, error: userFetchError } = await supabase.auth.getUser();
     if (userFetchError) {
       console.error('Error fetching user details:', userFetchError);
       return;
@@ -103,11 +120,10 @@ onMounted(async () => {
       user.value.profilePicture = data.img || user.value.profilePicture;
       user.value.coverPhoto = data.cover_img || user.value.coverPhoto;
 
-      // Update image references
       profileImage.value = user.value.profilePicture;
       coverImage.value = user.value.coverPhoto;
       console.log('Profile fetched successfully!', data);
-    } 
+    }
   } catch (err) {
     console.error('Unexpected error while fetching profile:', err);
   }
@@ -115,39 +131,44 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="profile-container">
-    <!-- Cover Photo Section -->
-    <div class="cover-photo-container">
-      <img :src="coverImage" alt="Set Cover Photo" class="cover-photo text-center" />
-      <label for="cover-upload" class="cover-change-icon">
-        <i class="mdi mdi-pencil"></i>
-      </label>
-      <input type="file" id="cover-upload" @change="(e) => handleImageChange(e, 'cover')" class="image-input" accept="image/*" />
-    </div>
+  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
+    <template #navigation>
+      <SideNavigation :is-drawer-visible="isDrawerVisible"></SideNavigation>
+    </template>
 
-    <!-- Profile Picture Section -->
-    <div class="profile-picture-container">
-      <img :src="profileImage" alt="Profile Picture" class="profile-picture" />
-      <label for="image-upload" class="image-change-icon">
-        <i class="mdi mdi-pencil"></i>
-      </label>
-      <input type="file" id="image-upload" @change="(e) => handleImageChange(e, 'profile')" class="image-input" accept="image/*" />
-    </div>
+    <template #content>
+      <div class="profile-container">
+        <div class="cover-photo-container">
+          <img :src="coverImage" alt="Set Cover Photo" class="cover-photo text-center" />
+          <label for="cover-upload" class="cover-change-icon">
+            <i class="mdi mdi-pencil"></i>
+          </label>
+          <input type="file" id="cover-upload" @change="(e) => handleImageChange(e, 'cover')" class="image-input" accept="image/*" />
+        </div>
+
+        <div class="profile-picture-container">
+          <img :src="profileImage" alt="Profile Picture" class="profile-picture" />
+          <label for="image-upload" class="image-change-icon">
+            <i class="mdi mdi-pencil"></i>
+          </label>
+          <input type="file" id="image-upload" @change="(e) => handleImageChange(e, 'profile')" class="image-input" accept="image/*" />
+        </div>
 
         <div class="user-details">
           <h3>{{ user.displayName }}</h3>
         </div>
 
-    <!-- Back Button -->
-    <div class="button-container">
-      <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
-        <v-icon dark left>mdi-arrow-left</v-icon>Back
-      </v-btn>
-      <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
-        <v-icon dark left>mdi-content-save</v-icon>Save Profile
-      </v-btn>
-    </div>
-  </div>
+        <div class="button-container">
+          <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
+            <v-icon dark left>mdi-arrow-left</v-icon>back
+          </v-btn>
+          <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
+            <v-icon dark left>mdi-content-save </v-icon> Save Profile
+          </v-btn>
+        </div>
+      </div>
+    </template>
+  </AppLayout>
 </template>
 
 <style scoped>
