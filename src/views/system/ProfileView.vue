@@ -1,61 +1,61 @@
 <script setup>
-import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
-import { supabase } from '@/utils/supabase'; // Ensure Supabase is imported correctly
+import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { supabase } from '@/utils/supabase' // Ensure Supabase is imported correctly
 
-const router = useRouter();
+const router = useRouter()
 
 // Reactive object to store user profile data
 const user = ref({
   displayName: '',
   email: '',
-  profilePicture: '/images/profile.jpg', // Default profile picture
-  coverPhoto: '/images/cover.webp', // Default cover photo
-});
+  profilePicture: '/images/profilleee.jpg', // Default profile picture
+  coverPhoto: '/images/coverrr (1).jpg', // Default cover photo
+})
 
 // Function to handle profile picture or cover photo change
 // To handle the profile and cover image updates
-const profileImage = ref(user.value.profilePicture);
-const coverImage = ref(user.value.coverPhoto);
+const profileImage = ref(user.value.profilePicture)
+const coverImage = ref(user.value.coverPhoto)
 
 // Function to handle the profile picture or cover photo change
 const handleImageChange = (event, type) => {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (file) {
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onloadend = () => {
       if (type === 'profile') {
-        profileImage.value = reader.result; // Update profile picture
+        profileImage.value = reader.result // Update profile picture
       } else if (type === 'cover') {
-        coverImage.value = reader.result; // Update cover photo
+        coverImage.value = reader.result // Update cover photo
       }
-    };
-    reader.readAsDataURL(file);
+    }
+    reader.readAsDataURL(file)
   }
-};
+}
 
 // Function to save the profile (to localStorage)
 const saveProfile = () => {
-  user.value.profilePicture = profileImage.value;
-  user.value.coverPhoto = coverImage.value;
-  localStorage.setItem('userProfile', JSON.stringify(user.value)); // Save to localStorage
-  console.log('Profile saved!', user.value);
-};
+  user.value.profilePicture = profileImage.value
+  user.value.coverPhoto = coverImage.value
+  localStorage.setItem('userProfile', JSON.stringify(user.value)) // Save to localStorage
+  console.log('Profile saved!', user.value)
+}
 
 // Function to go back to the dashboard
 const goBack = () => {
-  router.push({ name: 'dashboard' });
-};
+  router.push({ name: 'dashboard' })
+}
 
 // On component mount, load the profile from localStorage if it exists
 onMounted(() => {
-  const storedProfile = localStorage.getItem('userProfile');
+  const storedProfile = localStorage.getItem('userProfile')
   if (storedProfile) {
-    user.value = JSON.parse(storedProfile);
-    profileImage.value = user.value.profilePicture;
-    coverImage.value = user.value.coverPhoto;
+    user.value = JSON.parse(storedProfile)
+    profileImage.value = user.value.profilePicture
+    coverImage.value = user.value.coverPhoto
   }
-});
+})
 
 // On component mount, load the profile from Supabase
 onMounted(async () => {
@@ -63,33 +63,35 @@ onMounted(async () => {
     const {
       data: { session },
       error: sessionError,
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getSession()
 
     if (sessionError) {
-      console.error('Error fetching session:', sessionError);
-      return;
+      console.error('Error fetching session:', sessionError)
+      return
     }
 
-    const userId = session?.user?.id;
+    const userId = session?.user?.id
     if (!userId) {
-      console.error('User is not logged in.');
-      return;
+      console.error('User is not logged in.')
+      return
     }
 
     // Fetch user data from Supabase auth (user metadata)
-    const { data: userData, error: userFetchError } = await supabase.auth.getUser();
+    const { data: userData, error: userFetchError } =
+      await supabase.auth.getUser()
 
     if (userFetchError) {
-      console.error('Error fetching user details:', userFetchError);
-      return;
+      console.error('Error fetching user details:', userFetchError)
+      return
     }
 
     if (userData?.user) {
-      user.value.displayName = userData.user.user_metadata?.display_name || 'No Name';
-      user.value.email = userData.user.email || '';
+      user.value.displayName =
+        userData.user.user_metadata?.display_name || 'No Name'
+      user.value.email = userData.user.email || ''
     } else {
-      console.error('No user data found in session.');
-      return;
+      console.error('No user data found in session.')
+      return
     }
 
     // Fetch profile from the user_profile table (images, etc.)
@@ -97,34 +99,44 @@ onMounted(async () => {
       .from('user_profile')
       .select('*')
       .eq('user_id', userId)
-      .maybeSingle();
+      .maybeSingle()
 
     if (profileFetchError) {
-      console.error('Error fetching profile:', profileFetchError);
+      console.error('Error fetching profile:', profileFetchError)
     } else if (data) {
-      user.value.profilePicture = data.img || user.value.profilePicture;
-      user.value.coverPhoto = data.cover_img || user.value.coverPhoto;
+      user.value.profilePicture = data.img || user.value.profilePicture
+      user.value.coverPhoto = data.cover_img || user.value.coverPhoto
 
       // Update image references
-      profileImage.value = user.value.profilePicture;
-      coverImage.value = user.value.coverPhoto;
-      console.log('Profile fetched successfully!', data);
-    } 
+      profileImage.value = user.value.profilePicture
+      coverImage.value = user.value.coverPhoto
+      console.log('Profile fetched successfully!', data)
+    }
   } catch (err) {
-    console.error('Unexpected error while fetching profile:', err);
+    console.error('Unexpected error while fetching profile:', err)
   }
-});
+})
 </script>
 
 <template>
   <div class="profile-container">
     <!-- Cover Photo Section -->
     <div class="cover-photo-container">
-      <img :src="coverImage" alt="Set Cover Photo" class="cover-photo text-center" />
+      <img
+        :src="coverImage"
+        alt="Set Cover Photo"
+        class="cover-photo text-center"
+      />
       <label for="cover-upload" class="cover-change-icon">
         <i class="mdi mdi-pencil"></i>
       </label>
-      <input type="file" id="cover-upload" @change="(e) => handleImageChange(e, 'cover')" class="image-input" accept="image/*" />
+      <input
+        type="file"
+        id="cover-upload"
+        @change="e => handleImageChange(e, 'cover')"
+        class="image-input"
+        accept="image/*"
+      />
     </div>
 
     <!-- Profile Picture Section -->
@@ -133,7 +145,13 @@ onMounted(async () => {
       <label for="image-upload" class="image-change-icon">
         <i class="mdi mdi-pencil"></i>
       </label>
-      <input type="file" id="image-upload" @change="(e) => handleImageChange(e, 'profile')" class="image-input" accept="image/*" />
+      <input
+        type="file"
+        id="image-upload"
+        @change="e => handleImageChange(e, 'profile')"
+        class="image-input"
+        accept="image/*"
+      />
     </div>
 
     <!-- Display User's Display Name -->
@@ -146,7 +164,12 @@ onMounted(async () => {
       <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
         <v-icon dark left>mdi-arrow-left</v-icon>Back
       </v-btn>
-      <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
+      <v-btn
+        @click="saveProfile"
+        class="bordered save-button"
+        color="purple"
+        dark
+      >
         <v-icon dark left>mdi-content-save</v-icon>Save Profile
       </v-btn>
     </div>
