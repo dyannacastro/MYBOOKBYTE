@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/utils/supabase'; // Ensure Supabase is imported correctly
 
-const router = useRouter()
+const router = useRouter();
 
 const user = ref({
   displayName: '',
@@ -18,19 +18,19 @@ const profileImage = ref(user.value.profilePicture);
 const coverImage = ref(user.value.coverPhoto);
 
 const handleImageChange = (event, type) => {
-  const file = event.target.files[0]
+  const file = event.target.files[0];
   if (file) {
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onloadend = () => {
       if (type === 'profile') {
         profileImage.value = reader.result; // Update profile picture
       } else if (type === 'cover') {
         coverImage.value = reader.result; // Update cover photo
       }
-    }
-    reader.readAsDataURL(file)
+    };
+    reader.readAsDataURL(file);
   }
-}
+};
 
 // Function to save the profile (to localStorage)
 const saveProfile = () => {
@@ -42,8 +42,8 @@ const saveProfile = () => {
 
 // Function to go back to the dashboard
 const goBack = () => {
-  router.push({ name: 'dashboard' })
-}
+  router.push({ name: 'dashboard' });
+};
 
 // On component mount, load the profile from localStorage if it exists
 onMounted(() => {
@@ -65,44 +65,43 @@ onMounted(async () => {
     } = await supabase.auth.getSession();
 
     if (sessionError) {
-      console.error('Error fetching session:', sessionError)
-      return
+      console.error('Error fetching session:', sessionError);
+      return;
     }
 
     const userId = session?.user?.id;
     if (!userId) {
-      console.error('User is not logged in.')
-      return
+      console.error('User is not logged in.');
+      return;
     }
 
     // Fetch user data from Supabase auth (user metadata)
     const { data: userData, error: userFetchError } = await supabase.auth.getUser();
 
     if (userFetchError) {
-      console.error('Error fetching user details:', userFetchError)
-      return
+      console.error('Error fetching user details:', userFetchError);
+      return;
     }
 
     if (userData?.user) {
-      user.value.displayName =
-        userData.user.user_metadata?.display_name || 'No Name'
-      user.value.email = userData.user.email || ''
+      user.value.displayName = userData.user.user_metadata?.display_name || 'No Name';
+      user.value.email = userData.user.email || '';
     } else {
-      console.error('No user data found in session.')
-      return
+      console.error('No user data found in session.');
+      return;
     }
 
     const { data, error: profileFetchError } = await supabase
       .from('user_profile')
       .select('*')
       .eq('user_id', userId)
-      .maybeSingle()
+      .maybeSingle();
 
     if (profileFetchError) {
-      console.error('Error fetching profile:', profileFetchError)
+      console.error('Error fetching profile:', profileFetchError);
     } else if (data) {
-      user.value.profilePicture = data.img || user.value.profilePicture
-      user.value.coverPhoto = data.cover_img || user.value.coverPhoto
+      user.value.profilePicture = data.img || user.value.profilePicture;
+      user.value.coverPhoto = data.cover_img || user.value.coverPhoto;
 
       // Update image references
       profileImage.value = user.value.profilePicture;
@@ -110,9 +109,9 @@ onMounted(async () => {
       console.log('Profile fetched successfully!', data);
     } 
   } catch (err) {
-    console.error('Unexpected error while fetching profile:', err)
+    console.error('Unexpected error while fetching profile:', err);
   }
-})
+});
 </script>
 
 <template>
