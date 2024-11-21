@@ -21,9 +21,11 @@ const fetchFavoritesFromSupabase = async () => {
 
     console.log('Fetching favorite books for user ID:', userId.value);
 
+    // Modify query to only fetch favorites for the currently logged-in user
     const { data: favoriteData, error: fetchError } = await supabase
       .from('favorites')
-      .select('book_id');
+      .select('book_id')
+      .eq('user_id', userId.value);  // Only fetch favorites for the current user
 
     if (fetchError) {
       console.error('Error fetching favorites from Supabase:', fetchError.message, fetchError.details);
@@ -86,7 +88,7 @@ const addFavoriteToSupabase = async (book) => {
 
     console.log('Attempting to add book to favorites:', book);
 
-    // Insert favorite into Supabase
+    // Insert favorite into Supabase for the current user
     const { data, error } = await supabase
       .from('favorites')
       .insert([
@@ -123,7 +125,7 @@ const removeFavoriteFromSupabase = async (id) => {
     const { error } = await supabase
       .from('favorites')
       .delete()
-      .eq('user_id', userId.value)
+      .eq('user_id', userId.value)  // Ensure we only delete the favorite for the current user
       .eq('book_id', id);
 
     if (error) {
@@ -194,6 +196,7 @@ onMounted(async () => {
   }
 });
 </script>
+
 
 <template>
   <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
