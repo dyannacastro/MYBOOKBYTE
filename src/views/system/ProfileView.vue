@@ -1,20 +1,20 @@
 <script setup>
-import { useRouter } from 'vue-router';
-import { ref, onMounted, onUnmounted } from 'vue';
-import { supabase } from '@/utils/supabase';
+import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { supabase } from '@/utils/supabase'
 
-const router = useRouter();
+const router = useRouter()
 
 const user = ref({
   displayName: '',
   email: '',
   profilePicture: '/images/profile.jpg',
   coverPhoto: '/images/cover.webp',
-});
+})
 
-const profileImage = ref(user.value.profilePicture);
-const coverImage = ref(user.value.coverPhoto);
-const favoriteBooks = ref([]);
+const profileImage = ref(user.value.profilePicture)
+const coverImage = ref(user.value.coverPhoto)
+const favoriteBooks = ref([])
 
 const quotes = ref([
   {
@@ -29,7 +29,7 @@ const quotes = ref([
   },
   {
     author: 'Albert Einstein',
-    text: '“Two things are infinite: the universe and human stupidity; and I\'m not sure about the universe.”',
+    text: "“Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.”",
     img: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1429114964i/9810._UX200_CR0,14,200,200_.jpg',
   },
   {
@@ -39,7 +39,7 @@ const quotes = ref([
   },
   {
     author: 'Dr. Seuss',
-    text: '“You know you\'re in love when you can\'t fall asleep because reality is finally better than your dreams.”',
+    text: "“You know you're in love when you can't fall asleep because reality is finally better than your dreams.”",
     img: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1193930952i/61105._UX200_CR0,30,200,200_.jpg',
   },
   {
@@ -54,12 +54,12 @@ const quotes = ref([
   },
   {
     author: 'Robert Frost',
-    text: '“In three words I can sum up everything I\'ve learned about life: it goes on.”',
+    text: "“In three words I can sum up everything I've learned about life: it goes on.”",
     img: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1605640483i/7715._UX200_CR0,33,200,200_.jpg',
   },
   {
     author: 'J.K. Rowling',
-    text: '“If you want to know what a man\'s like, take a good look at how he treats his inferiors, not his equals.”',
+    text: "“If you want to know what a man's like, take a good look at how he treats his inferiors, not his equals.”",
     img: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1596216614i/1077326._UX200_CR0,15,200,200_.jpg',
   },
   {
@@ -69,12 +69,12 @@ const quotes = ref([
   },
   {
     author: 'Mark Twain',
-    text: '“If you tell the truth, you don\'t have to remember anything.”',
+    text: "“If you tell the truth, you don't have to remember anything.”",
     img: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1322103868i/1244._UX200_CR0,40,200,200_.jpg',
   },
   {
     author: 'Maya Angelou',
-    text: '“I\'ve learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.”',
+    text: "“I've learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.”",
     img: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1379017377i/3503._UX200_CR0,6,200,200_.jpg',
   },
   {
@@ -96,76 +96,79 @@ const quotes = ref([
     author: 'Elbert Hubbard',
     text: '“A friend is someone who knows all about you and still loves you.”',
     img: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/authors/1216826209i/114059._CR0,24,200,200_.jpg',
-  }
-]);
+  },
+])
 
-
-const currentQuoteIndex = ref(0);
-let quoteInterval;
+const currentQuoteIndex = ref(0)
+let quoteInterval
 
 // Function to automatically move to the next quote
 const startQuoteRotation = () => {
   quoteInterval = setInterval(() => {
-    currentQuoteIndex.value = (currentQuoteIndex.value + 1) % quotes.value.length;
-  }, 5000); // Change quote every 5 seconds
-};
+    currentQuoteIndex.value =
+      (currentQuoteIndex.value + 1) % quotes.value.length
+  }, 5000) // Change quote every 5 seconds
+}
 
 // Stop the quote rotation when the component is destroyed
 const stopQuoteRotation = () => {
   if (quoteInterval) {
-    clearInterval(quoteInterval);
+    clearInterval(quoteInterval)
   }
-};
+}
 
 const handleImageChange = (event, type) => {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (file) {
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onloadend = () => {
       if (type === 'profile') {
-        profileImage.value = reader.result;
+        profileImage.value = reader.result
       } else if (type === 'cover') {
-        coverImage.value = reader.result;
+        coverImage.value = reader.result
       }
-    };
-    reader.readAsDataURL(file);
+    }
+    reader.readAsDataURL(file)
   }
-};
+}
 
 const saveProfile = async () => {
   try {
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession()
     if (sessionError) {
-      console.error('Error fetching session:', sessionError);
-      return;
+      console.error('Error fetching session:', sessionError)
+      return
     }
 
-    const userId = sessionData?.session?.user?.id;
+    const userId = sessionData?.session?.user?.id
     if (!userId) {
-      console.error('User is not logged in.');
-      return;
+      console.error('User is not logged in.')
+      return
     }
 
     const updates = {
       user_id: userId,
       img: profileImage.value,
       cover_img: coverImage.value,
-    };
+    }
 
-    const { error } = await supabase.from('user_profile').upsert(updates, { onConflict: ['user_id'] });
+    const { error } = await supabase
+      .from('user_profile')
+      .upsert(updates, { onConflict: ['user_id'] })
     if (error) {
-      console.error('Error saving profile:', error);
+      console.error('Error saving profile:', error)
     } else {
-      console.log('Profile saved successfully!', user.value);
+      console.log('Profile saved successfully!', user.value)
     }
   } catch (err) {
-    console.error('Unexpected error while saving profile:', err);
+    console.error('Unexpected error while saving profile:', err)
   }
-};
+}
 
 const goBack = () => {
-  router.push({ name: 'dashboard' });
-};
+  router.push({ name: 'dashboard' })
+}
 
 const resetUserProfileToDefaults = () => {
   user.value = {
@@ -173,120 +176,134 @@ const resetUserProfileToDefaults = () => {
     email: '',
     profilePicture: '/images/profile.jpg',
     coverPhoto: '/images/cover.webp',
-  };
-  profileImage.value = user.value.profilePicture;
-  coverImage.value = user.value.coverPhoto;
-};
+  }
+  profileImage.value = user.value.profilePicture
+  coverImage.value = user.value.coverPhoto
+}
 
 // Function to fetch favorite books of the user from the Supabase database
 const fetchFavoriteBooks = async () => {
   try {
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession()
     if (sessionError) {
-      console.error('Error fetching session:', sessionError);
-      return;
+      console.error('Error fetching session:', sessionError)
+      return
     }
 
-    const userId = sessionData?.session?.user?.id;
+    const userId = sessionData?.session?.user?.id
     if (!userId) {
-      console.error('User is not logged in.');
-      return;
+      console.error('User is not logged in.')
+      return
     }
 
     const { data: favoritesData, error: favoritesError } = await supabase
       .from('favorites')
       .select('book_id, books (title, author, cover_image)')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
 
     if (favoritesError) {
-      console.error('Error fetching favorite books:', favoritesError);
-      return;
+      console.error('Error fetching favorite books:', favoritesError)
+      return
     }
 
     // Format favorite books into a usable array
-    favoriteBooks.value = favoritesData.map((fav) => ({
+    favoriteBooks.value = favoritesData.map(fav => ({
       id: fav.book_id,
       title: fav.books.title,
       author: fav.books.author,
       coverImage: fav.books.cover_image,
-    }));
+    }))
   } catch (err) {
-    console.error('Unexpected error while fetching favorite books:', err);
+    console.error('Unexpected error while fetching favorite books:', err)
   }
-};
+}
 
 onMounted(async () => {
-  resetUserProfileToDefaults();
+  resetUserProfileToDefaults()
 
   try {
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession()
     if (sessionError) {
-      console.error('Error fetching session:', sessionError);
-      return;
+      console.error('Error fetching session:', sessionError)
+      return
     }
 
-    const userId = sessionData?.session?.user?.id;
+    const userId = sessionData?.session?.user?.id
     if (!userId) {
-      console.error('User is not logged in.');
-      return;
+      console.error('User is not logged in.')
+      return
     }
 
-    const { data: userData, error: userFetchError } = await supabase.auth.getUser();
+    const { data: userData, error: userFetchError } =
+      await supabase.auth.getUser()
     if (userFetchError) {
-      console.error('Error fetching user details:', userFetchError);
-      return;
+      console.error('Error fetching user details:', userFetchError)
+      return
     }
 
     if (userData?.user) {
-      user.value.displayName = userData.user.user_metadata?.display_name || 'No Name';
-      user.value.email = userData.user.email || '';
+      user.value.displayName =
+        userData.user.user_metadata?.display_name || 'No Name'
+      user.value.email = userData.user.email || ''
     } else {
-      console.error('No user data found in session.');
-      return;
+      console.error('No user data found in session.')
+      return
     }
 
     const { data, error: profileFetchError } = await supabase
       .from('user_profile')
       .select('*')
       .eq('user_id', userId)
-      .maybeSingle();
+      .maybeSingle()
 
     if (profileFetchError) {
-      console.error('Error fetching profile:', profileFetchError);
+      console.error('Error fetching profile:', profileFetchError)
     } else if (data) {
-      user.value.profilePicture = data.img || user.value.profilePicture;
-      user.value.coverPhoto = data.cover_img || user.value.coverPhoto;
+      user.value.profilePicture = data.img || user.value.profilePicture
+      user.value.coverPhoto = data.cover_img || user.value.coverPhoto
 
-      profileImage.value = user.value.profilePicture;
-      coverImage.value = user.value.coverPhoto;
-      console.log('Profile fetched successfully!', data);
+      profileImage.value = user.value.profilePicture
+      coverImage.value = user.value.coverPhoto
+      console.log('Profile fetched successfully!', data)
     }
 
     // Fetch the user's favorite books
-    await fetchFavoriteBooks();
+    await fetchFavoriteBooks()
 
     // Start rotating quotes when the profile page is mounted
-    startQuoteRotation();
+    startQuoteRotation()
   } catch (err) {
-    console.error('Unexpected error while fetching profile:', err);
+    console.error('Unexpected error while fetching profile:', err)
   }
-});
+})
 
 // Clear the interval when the component is destroyed
 onUnmounted(() => {
-  stopQuoteRotation();
-});
+  stopQuoteRotation()
+})
 </script>
 
 <template>
   <div class="profile-container">
     <div class="cover-photo-container">
-      <img :src="coverImage" alt="Set Cover Photo" class="cover-photo text-center" />
+      <img
+        :src="coverImage"
+        alt="Set Cover Photo"
+        class="cover-photo text-center"
+      />
       <label for="cover-upload" class="cover-change-icon">
         <i class="mdi mdi-pencil"></i>
       </label>
-      <input type="file" id="cover-upload" @change="(e) => handleImageChange(e, 'cover')" class="image-input" accept="image/*" />
+      <input
+        type="file"
+        id="cover-upload"
+        @change="e => handleImageChange(e, 'cover')"
+        class="image-input"
+        accept="image/*"
+      />
     </div>
 
     <div class="profile-picture-container">
@@ -294,7 +311,13 @@ onUnmounted(() => {
       <label for="image-upload" class="image-change-icon">
         <i class="mdi mdi-pencil"></i>
       </label>
-      <input type="file" id="image-upload" @change="(e) => handleImageChange(e, 'profile')" class="image-input" accept="image/*" />
+      <input
+        type="file"
+        id="image-upload"
+        @change="e => handleImageChange(e, 'profile')"
+        class="image-input"
+        accept="image/*"
+      />
     </div>
 
     <div class="user-details">
@@ -305,7 +328,12 @@ onUnmounted(() => {
       <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
         <v-icon dark left>mdi-arrow-left</v-icon>Back
       </v-btn>
-      <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
+      <v-btn
+        @click="saveProfile"
+        class="bordered save-button"
+        color="purple"
+        dark
+      >
         <v-icon dark left>mdi-content-save</v-icon> Save Profile
       </v-btn>
     </div>
@@ -318,10 +346,16 @@ onUnmounted(() => {
     <!-- Quotes Section -->
     <div class="quote-section">
       <div class="quote-container">
-        <img :src="quotes[currentQuoteIndex].img" alt="Quote Author" class="quote-avatar">
+        <img
+          :src="quotes[currentQuoteIndex].img"
+          alt="Quote Author"
+          class="quote-avatar"
+        />
         <div class="quote-text">
           <p>{{ quotes[currentQuoteIndex].text }}</p>
-          <p><strong>― {{ quotes[currentQuoteIndex].author }}</strong></p>
+          <p>
+            <strong>― {{ quotes[currentQuoteIndex].author }}</strong>
+          </p>
         </div>
       </div>
     </div>
@@ -342,11 +376,12 @@ onUnmounted(() => {
           </v-card>
         </div>
       </div>
-      <p v-else class="no-favorites-text">You haven't added any favorite books yet.</p>
+      <p v-else class="no-favorites-text">
+        You haven't added any favorite books yet.
+      </p>
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .profile-container {
@@ -439,7 +474,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 40px;
 }
 
 .bordered {
@@ -462,12 +497,20 @@ onUnmounted(() => {
 
 .divider::before,
 .divider::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 50%;
   width: 40%;
   height: 1px;
-  background: linear-gradient(45deg,#000, plum, #262626, #b408a3cf, #64c0ce, #000);
+  background: linear-gradient(
+    45deg,
+    #000,
+    plum,
+    #262626,
+    #b408a3cf,
+    #64c0ce,
+    #000
+  );
 }
 
 .divider::before {
@@ -477,16 +520,30 @@ onUnmounted(() => {
 .divider::after {
   right: 0;
 }
-
 .divider span {
   display: inline-block;
-  /* background: #fff; */
   padding: 0 10px;
-  /* color: #666; */
-  background: linear-gradient(45deg,#000, plum, #262626, #b408a3cf, #64c0ce, #000);
+  background: linear-gradient(45deg, #64c0ce, #b909fe, #64c0ce, #000);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-weight: bold;
+  font-size: 1.5rem;
+  animation: gradient-animation 3s ease infinite;
 }
 
+/* Gradient animation keyframes */
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 
 /* Quotes Section Styles */
 .quote-section {

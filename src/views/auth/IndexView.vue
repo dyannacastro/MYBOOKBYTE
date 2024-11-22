@@ -47,7 +47,7 @@ onMounted(() => {
             <v-img
               src="/images/book-logo.png"
               class="circle-logo mb-4"
-              max-width="280"
+              max-width="300"
               :style="{ width: '100%', 'max-width': '270px' }"
             ></v-img>
           </v-col>
