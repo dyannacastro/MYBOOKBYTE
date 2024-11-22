@@ -27,8 +27,8 @@ onMounted(() => {
 
           <p class="text-subtitle-1 font-weight-bold mb-4">Page does not exist.</p>
 
-          <v-btn class="mt-2" color="#212121" prepend-icon="mdi-home" to="/dashboard/home">
-            Back to {{ isLoggedIn ? 'Dashboard' : 'Homepage' }}
+          <v-btn class="mt-2" color="#212121" prepend-icon="mdi-home" to="/dashboard">
+            Back to {{ isLoggedIn ? 'Dashboard' : 'Dashboard' }}
           </v-btn>
         </v-col>
          </v-card>
