@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '@/views/auth/LoginView.vue';
+// import ForbiddenView from '@/views/errors/ForbiddenView.vue';
+import NotFoundView from '@/views/errors/NotFoundView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
 import IndexView from '@/views/auth/IndexView.vue';
 import DashboardView from '@/views/system/DashboardView.vue';
