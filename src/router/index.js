@@ -72,7 +72,20 @@ const router = createRouter({
       name: 'profile',
       component: ProfileView,
       meta: { requiresAuth: true }
-    }
+    },
+    // Errors Pages
+  // {
+  //   path: '/forbidden',
+  //   name: 'forbidden',
+  //   component: ForbiddenView,
+  //   meta: { isDefault: true }
+  // },
+  {
+    path: '/:catchAll(.*)',
+    name: 'not-found',
+    component: NotFoundView,
+    meta: { isDefault: true }
+  }
   ],
 });
 
