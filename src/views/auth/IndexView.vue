@@ -48,7 +48,6 @@ onMounted(() => {
               src="/images/book-logo.png"
               class="circle-logo mb-4"
               max-width="300"
-              :style="{ width: '100%', 'max-width': '270px' }"
             ></v-img>
           </v-col>
         </v-row>
@@ -60,7 +59,7 @@ onMounted(() => {
           <v-col cols="12" md="6">
             <v-card>
               <v-card-title class="custom-title"
-                >Comprehensive Book Library</v-card-title
+                >Comprehensive Technology Book Library</v-card-title
               >
               <v-card-text>
                 BOOKBYTE offers a wide selection of books across various genres
@@ -202,8 +201,8 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/scifi.svg"
-                  alt="Science Fiction"
-                  title="Science Fiction"
+                  alt="Fiction"
+                  title="Fiction"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
                   Fiction
@@ -214,11 +213,11 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/bestsellers.svg"
-                  alt="Bestsellers"
-                  title="Bestsellers"
+                  alt="Education"
+                  title="Education"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
-                  Bestsellers
+                  Education
                 </figcaption>
               </figure>
             </li>
@@ -226,8 +225,8 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/thriller.svg"
-                  alt="Thriller"
-                  title="Thriller"
+                  alt="Mystery"
+                  title="Mystery"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
                   Mystery
@@ -238,8 +237,8 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/movies.svg"
-                  alt="Book to Screen"
-                  title="Book to Screen"
+                  alt="  Adventure"
+                  title="  Adventure"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
                   Adventure
@@ -250,11 +249,11 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/lgbtq.svg"
-                  alt="LGBTQIA+"
-                  title="LGBTQIA+"
+                  alt="Self-Help"
+                  title="Self-Help"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
-                  Psychology
+                  Self-Help
                 </figcaption>
               </figure>
             </li>
@@ -262,11 +261,11 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/nonfiction.svg"
-                  alt="Nonfiction"
-                  title="Nonfiction"
+                  alt="Psychology"
+                  title="Psychology"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
-                  Education
+                  Psychology
                 </figcaption>
               </figure>
             </li>

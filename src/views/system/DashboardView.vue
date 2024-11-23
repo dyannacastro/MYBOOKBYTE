@@ -3,7 +3,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import { ref, computed, watch, onMounted } from 'vue'
 import axios from 'axios'
 import { useFavoritesStore } from '@/stores/userFavorites'
-import { supabase } from '@/utils/supabase' // Import the Supabase instance
+import { supabase } from '@/utils/supabase'
 
 const isDrawerVisible = ref(true)
 const tabs = ref('fiction')
@@ -11,8 +11,8 @@ const cards = ref([])
 const searchQuery = ref('')
 const loading = ref(false)
 const error = ref(null)
-const showAlert = ref(false) // Used for Snackbar visibility
-const alertMessage = ref('') // Snackbar message
+const showAlert = ref(false)
+const alertMessage = ref('')
 
 const genres = ref([
   'fiction',
@@ -273,6 +273,15 @@ export default {
   data() {
     return {
       slides: [
+        { image: '/images/table.png' },
+        { image: '/images/1.png' },
+        { image: '/images/book1.png' },
+        { image: '/images/book2.png' },
+        { image: '/images/book3.png' },
+        { image: '/images/book4.png' },
+        { image: '/images/book5.png' },
+        { image: '/images/book6.png' },
+        { image: '/images/book7.png' },
         { image: '/images/table.png' },
         { image: '/images/1.png' },
         { image: '/images/book1.png' },

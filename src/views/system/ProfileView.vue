@@ -477,16 +477,6 @@ onUnmounted(() => {
   margin-top: 40px;
 }
 
-.bordered {
-  border-radius: 8px;
-  padding: 8px;
-  transition: box-shadow 0.3s ease-in-out;
-}
-
-.bordered:hover {
-  box-shadow: 0 0 10px 8px rgba(186, 104, 200, 1);
-}
-
 /* Divider Style */
 .divider {
   position: relative;
