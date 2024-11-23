@@ -201,8 +201,8 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/scifi.svg"
-                  alt="Science Fiction"
-                  title="Science Fiction"
+                  alt="Fiction"
+                  title="Fiction"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
                   Fiction
@@ -213,11 +213,11 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/bestsellers.svg"
-                  alt="Bestsellers"
-                  title="Bestsellers"
+                  alt="Education"
+                  title="Education"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
-                  Bestsellers
+                  Education
                 </figcaption>
               </figure>
             </li>
@@ -225,8 +225,8 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/thriller.svg"
-                  alt="Thriller"
-                  title="Thriller"
+                  alt="Mystery"
+                  title="Mystery"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
                   Mystery
@@ -237,8 +237,8 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/movies.svg"
-                  alt="Book to Screen"
-                  title="Book to Screen"
+                  alt="  Adventure"
+                  title="  Adventure"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
                   Adventure
@@ -249,11 +249,11 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/lgbtq.svg"
-                  alt="LGBTQIA+"
-                  title="LGBTQIA+"
+                  alt="Self-Help"
+                  title="Self-Help"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
-                  Psychology
+                  Self-Help
                 </figcaption>
               </figure>
             </li>
@@ -261,11 +261,11 @@ onMounted(() => {
               <figure>
                 <img
                   src="https://simonteen.b-cdn.net/app/uploads/2023/05/nonfiction.svg"
-                  alt="Nonfiction"
-                  title="Nonfiction"
+                  alt="Psychology"
+                  title="Psychology"
                 />
                 <figcaption style="color: var(--book-tag-accent-color)">
-                  Education
+                  Psychology
                 </figcaption>
               </figure>
             </li>
