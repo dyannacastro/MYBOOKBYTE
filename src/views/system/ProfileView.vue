@@ -477,6 +477,16 @@ onUnmounted(() => {
   margin-top: 40px;
 }
 
+.bordered {
+  border-radius: 8px;
+  padding: 8px;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.bordered:hover {
+  box-shadow: 0 0 10px 8px rgba(186, 104, 200, 1);
+}
+
 /* Divider Style */
 .divider {
   position: relative;
@@ -513,12 +523,19 @@ onUnmounted(() => {
 .divider span {
   display: inline-block;
   padding: 0 10px;
-  background: linear-gradient(45deg, #64c0ce, #b909fe, #64c0ce, #000);
-  background-size: 200% 200%;
+background: linear-gradient(
+    45deg,
+    #000,
+    plum,
+    #262626,
+    #b408a3cf,
+    #64c0ce,
+    #000
+  );  background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1rem;
   animation: gradient-animation 3s ease infinite;
 }
 
@@ -578,6 +595,11 @@ onUnmounted(() => {
 
 .book-card {
   max-width: 200px;
+}
+
+.v-card-title{
+  color: rgb(234, 8, 234);
+  font-size: 1rem;
 }
 
 .no-favorites-text {
