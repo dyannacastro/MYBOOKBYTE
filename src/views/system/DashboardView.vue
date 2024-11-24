@@ -3,7 +3,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import { ref, computed, watch, onMounted } from 'vue'
 import axios from 'axios'
 import { useFavoritesStore } from '@/stores/userFavorites'
-import { supabase } from '@/utils/supabase'
+import { supabase } from '@/utils/supabase' // Import the Supabase instance
 
 const isDrawerVisible = ref(true)
 const tabs = ref('fiction')
@@ -11,8 +11,8 @@ const cards = ref([])
 const searchQuery = ref('')
 const loading = ref(false)
 const error = ref(null)
-const showAlert = ref(false)
-const alertMessage = ref('')
+const showAlert = ref(false) // Used for Snackbar visibility
+const alertMessage = ref('') // Snackbar message
 
 const genres = ref([
   'fiction',
@@ -282,15 +282,6 @@ export default {
         { image: '/images/book5.png' },
         { image: '/images/book6.png' },
         { image: '/images/book7.png' },
-        { image: '/images/table.png' },
-        { image: '/images/1.png' },
-        { image: '/images/book1.png' },
-        { image: '/images/book2.png' },
-        { image: '/images/book3.png' },
-        { image: '/images/book4.png' },
-        { image: '/images/book5.png' },
-        { image: '/images/book6.png' },
-        { image: '/images/book7.png' },
       ],
     }
   },
@@ -345,27 +336,27 @@ export default {
 
         <!-- Genres Section -->
         <h3 class="gradient-text my-4">BOOK GENRES</h3>
-        <v-row justify="center" class="genre-icons my-4">
-          <v-col
-            v-for="genre in genres"
-            :key="genre"
-            cols="12"
-            sm="6"
-            md="4"
-            lg="3"
-          >
-            <v-btn
-              class="genre-icon gradient-button"
-              :class="{ active: tabs === genre }"
-              @click="tabs = genre"
-              elevation="2"
-              block
-              rounded
-            >
-              {{ genre.charAt(0).toUpperCase() + genre.slice(1) }}
-            </v-btn>
-          </v-col>
-        </v-row>
+        <v-row class="genre-icons my-4" justify="center">
+  <v-col
+    v-for="genre in genres"
+    :key="genre"
+    cols="6"  
+    md="3"    
+    lg="2"    
+  >
+    <v-btn
+      class="genre-icon gradient-button"
+      :class="{ active: tabs === genre }"
+      @click="tabs = genre"
+      elevation="2"
+      block
+      rounded
+    >
+      {{ genre.charAt(0).toUpperCase() + genre.slice(1) }}
+    </v-btn>
+  </v-col>
+</v-row>
+
 
         <v-divider></v-divider>
 
@@ -432,7 +423,7 @@ export default {
 
 <style scoped>
 .dashboard {
-  color: white;
+  color: plum;
 }
 
 .search {
@@ -440,7 +431,23 @@ export default {
 }
 
 .text {
-  color: white;
+  background: linear-gradient(45deg, #b909fe, #64c0ce, #b909fe); 
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-animation 3s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .error {
@@ -473,7 +480,7 @@ export default {
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   animation: gradient-animation 3s ease infinite;
 }
 
@@ -501,6 +508,7 @@ export default {
   justify-content: center;
   color: white;
   transition: background-color 0.3s;
+  width: 100%;  /* Ensures the button takes up the full width of its column */
 }
 
 .genre-icon.active {
@@ -527,4 +535,5 @@ export default {
 .gradient-button:hover {
   background: linear-gradient(45deg, #b909fe, #64c0ce, #b909fe);
 }
+
 </style>
