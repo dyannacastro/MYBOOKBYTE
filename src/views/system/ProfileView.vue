@@ -376,10 +376,17 @@ onUnmounted(() => {
       md="4" 
       lg="3" 
     >
-      <v-card class="book-card">
+      <v-card class="book-card pb-3">
         <v-img :src="book.coverImage" height="200px"></v-img>
         <v-card-title>{{ book.title }}</v-card-title>
         <v-card-subtitle>{{ book.author }}</v-card-subtitle>
+        <v-btn
+                  color="black"
+                  dark
+                  class="read mx-2 mt-5"
+                  @click="readBook(book.id)"
+                  >Read</v-btn
+                >
       </v-card>
     </v-col>
   </v-row>
@@ -602,5 +609,16 @@ background: linear-gradient(
 .no-favorites-text {
   color: #666;
   margin-top: 20px;
+}
+
+.read {
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 0 15px 4px rgba(186, 104, 200, 0.8);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.read:hover {
+  box-shadow: 0 0 20px 8px rgba(186, 104, 200, 1);
 }
 </style>
