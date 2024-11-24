@@ -392,11 +392,18 @@ export default {
                 class="card-title"
               ></v-card-title>
               <v-card-actions>
+                <v-btn
+                  color="purple"
+                  dark
+                  class="bordered mx-2 mt-5"
+                  @click="readBook(book.id)"
+                  >Read</v-btn
+                >
                 <v-spacer></v-spacer>
                 <v-btn
                   color="white"
                   dark
-                  class="bordered mx-2 mt-5"
+                  class="glow mx-2 mt-5"
                   icon
                   @click="toggleFavorite(card)"
                 >
@@ -473,6 +480,28 @@ export default {
 
 .v-card:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bordered {
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 0 15px 4px rgba(186, 104, 200, 0.8);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.bordered:hover {
+  box-shadow: 0 0 20px 8px rgba(186, 104, 200, 1);
+}
+
+.glow {
+  box-shadow: 0 0 15px 4px rgba(186, 104, 200, 0.8);
+  transition:
+    box-shadow 0.3s ease-in-out,
+    color 0.3s ease-in-out;
+}
+
+.glow:hover {
+  box-shadow: 0 0 20px 8px rgba(186, 104, 200, 1);
 }
 
 .gradient-text {
