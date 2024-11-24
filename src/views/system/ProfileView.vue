@@ -364,23 +364,30 @@ onUnmounted(() => {
     <div class="divider">
       <span>My Favorite Books</span>
     </div>
-
-    <!-- Favorite Books Section -->
+    
     <div class="favorite-books-section">
-      <div v-if="favoriteBooks.length > 0" class="favorite-books-grid">
-        <div v-for="book in favoriteBooks" :key="book.id" class="book-card">
-          <v-card>
-            <v-img :src="book.coverImage" height="200px"></v-img>
-            <v-card-title>{{ book.title }}</v-card-title>
-            <v-card-subtitle>{{ book.author }}</v-card-subtitle>
-          </v-card>
-        </div>
-      </div>
-      <p v-else class="no-favorites-text">
-        You haven't added any favorite books yet.
-      </p>
-    </div>
-  </div>
+  <v-row dense>
+    <v-col
+      v-for="book in favoriteBooks"
+      :key="book.id"
+      cols="12"
+      xs="6" 
+      sm="6" 
+      md="4" 
+      lg="3" 
+    >
+      <v-card class="book-card">
+        <v-img :src="book.coverImage" height="200px"></v-img>
+        <v-card-title>{{ book.title }}</v-card-title>
+        <v-card-subtitle>{{ book.author }}</v-card-subtitle>
+      </v-card>
+    </v-col>
+  </v-row>
+  <p v-if="favoriteBooks.length === 0" class="no-favorites-text">
+    You haven't added any favorite books yet.
+  </p>
+</div>
+</div>
 </template>
 
 <style scoped>
@@ -586,22 +593,12 @@ background: linear-gradient(
   text-align: center;
 }
 
-.favorite-books-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-.book-card {
-  max-width: 200px;
-}
-
 .v-card-title{
   color: rgb(234, 8, 234);
   font-size: 1rem;
 }
 
+/* No-Favorites Text Style */
 .no-favorites-text {
   color: #666;
   margin-top: 20px;
