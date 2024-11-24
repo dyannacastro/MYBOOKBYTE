@@ -520,14 +520,26 @@ onUnmounted(() => {
 .divider::after {
   right: 0;
 }
-.divider-span {
-  background: linear-gradient(45deg, #b909fe, #64c0ce, #b909fe); 
-  background-size: 200% 200%;
+.divider span {
+  display: inline-block;
+  padding: 0 10px;
+background: linear-gradient(
+    45deg,
+    #000,
+    plum,
+    #262626,
+    #b408a3cf,
+    #64c0ce,
+    #000
+  );  background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  font-size: 1rem;
   animation: gradient-animation 3s ease infinite;
 }
 
+/* Gradient animation keyframes */
 @keyframes gradient-animation {
   0% {
     background-position: 0% 50%;
@@ -539,6 +551,7 @@ onUnmounted(() => {
     background-position: 0% 50%;
   }
 }
+
 /* Quotes Section Styles */
 .quote-section {
   margin-top: 40px;
