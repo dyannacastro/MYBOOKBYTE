@@ -359,6 +359,9 @@ onMounted(async () => {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+.v-card-subtitle{
+  text-align: center;
+}
 /* .gradient-text {
   background: linear-gradient(45deg, #64c0ce, #b909fe, #64c0ce);
   background-size: 200% 200%;
