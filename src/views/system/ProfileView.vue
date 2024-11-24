@@ -376,7 +376,7 @@ onUnmounted(() => {
       md="4" 
       lg="3" 
     >
-      <v-card class="book-card pb-3">
+      <v-card class="book-card pb-5">
         <v-img :src="book.coverImage" height="200px"></v-img>
         <v-card-title>{{ book.title }}</v-card-title>
         <v-card-subtitle>{{ book.author }}</v-card-subtitle>
