@@ -229,7 +229,7 @@ onMounted(async () => {
     <template #content>
       <v-container>
         <h1 class="text-right my-4">
-          <span class="gradient-text">MY FAVORITES</span>
+          <!-- <span class="gradient-text">MY FAVORITES</span> -->
           <v-btn icon color="black" dark class="fav-icon mx-6">
             <v-icon color="purple">mdi-heart</v-icon>
           </v-btn>
@@ -359,12 +359,12 @@ onMounted(async () => {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.gradient-text {
+/* .gradient-text {
   background: linear-gradient(45deg, #64c0ce, #b909fe, #64c0ce);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   animation: gradient-animation 3s ease infinite;
 }
 
@@ -378,5 +378,5 @@ onMounted(async () => {
   100% {
     background-position: 0% 50%;
   }
-}
+} */
 </style>
