@@ -2,34 +2,56 @@
 import LoginForm from '@/components/auth/LoginForm.vue'
 import { useDisplay } from 'vuetify'
 
-const { smAndDown } = useDisplay();  
+const { smAndDown } = useDisplay()
 </script>
 
 <template>
   <v-container fluid class="full-height-container">
     <v-row no-gutters class="custom-flex-container">
-      <v-col v-if="!smAndDown" cols="12" md="6" lg="6"
-        class="bg-surface-dark text-center d-flex flex-column align-center justify-center left-col">
+      <v-col
+        v-if="!smAndDown"
+        cols="12"
+        md="6"
+        lg="6"
+        class="bg-surface-dark text-center d-flex flex-column align-center justify-center left-col"
+      >
         <div class="content-wrapper">
           <h1 class="gradient-text">Welcome to BookByte</h1>
-          <p class="quote-text">Discover endless knowledge and unlock your potential with every page.</p>
+          <p class="quote-text">
+            Discover endless knowledge and unlock your potential with every
+            page.
+          </p>
         </div>
       </v-col>
 
-      <v-col cols="12" md="6" lg="6" class="d-flex align-center justify-center right-col">
+      <v-col
+        cols="12"
+        md="6"
+        lg="6"
+        class="d-flex align-center justify-center right-col"
+      >
         <v-card class="custom-card mx-auto" elevation="0">
           <div v-if="smAndDown" class="mobile-welcome-section">
             <h1 class="gradient-text">Welcome to BookByte</h1>
-            <p class="quote-text">Discover endless knowledge and unlock your potential with every page.</p>
+            <p class="quote-text">
+              Discover endless knowledge and unlock your potential with every
+              page.
+            </p>
           </div>
 
-          <v-card-title class="text-center d-flex flex-column align-center justify-center">
-            <v-img src="/images/book-logo.png" :height="smAndDown ? '120px' : '200px'"
-              :width="smAndDown ? '120px' : '200px'" contain class="mx-auto pulsing-image"></v-img>
+          <v-card-title
+            class="text-center d-flex flex-column align-center justify-center"
+          >
+            <v-img
+              src="/images/book-logo.png"
+              :height="smAndDown ? '120px' : '200px'"
+              :width="smAndDown ? '120px' : '200px'"
+              contain
+              class="mx-auto pulsing-image"
+            ></v-img>
             <h2 class="bookbyte font-weight-black">BOOKBYTE</h2>
             <h5>Login</h5>
           </v-card-title>
-
 
           <v-card-text class="pt-4">
             <v-divider class="my-2"></v-divider>
@@ -151,8 +173,14 @@ const { smAndDown } = useDisplay();
 }
 
 .full-height-container {
-  background: linear-gradient(135deg,
-      #000000, #000000, #56104e, #000000, #000000);
+  background: linear-gradient(
+    135deg,
+    #000000,
+    #000000,
+    #56104e,
+    #000000,
+    #000000
+  );
 }
 
 .social-login {
@@ -182,7 +210,6 @@ const { smAndDown } = useDisplay();
 
 /* Pulse Animation */
 @keyframes pulse {
-
   0%,
   100% {
     transform: scale(1);

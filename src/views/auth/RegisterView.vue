@@ -2,21 +2,26 @@
 import RegisterForm from '@/components/auth/RegisterForm.vue'
 import { useDisplay } from 'vuetify'
 
-const { smAndDown } = useDisplay();  
+const { smAndDown } = useDisplay()
 </script>
-
 
 <template>
   <v-container fluid class="full-height-container">
     <v-row no-gutters class="custom-flex-container">
-
-      <v-col v-if="!smAndDown" cols="12" md="6" lg="6"
-        class="bg-surface-dark text-center d-flex flex-column align-center justify-center left-col">
+      <v-col
+        v-if="!smAndDown"
+        cols="12"
+        md="6"
+        lg="6"
+        class="bg-surface-dark text-center d-flex flex-column align-center justify-center left-col"
+      >
         <div class="content-wrapper">
           <h1 class="gradient-text">Welcome to BookByte</h1>
           <div class="desktop-social-section">
             <p class="quote-text">Continue to Sign Up?</p>
-            <v-divider class="my-3" style="border-width: 1px; opacity: 0.5;">OR</v-divider>
+            <v-divider class="my-3" style="border-width: 1px; opacity: 0.5"
+              >OR</v-divider
+            >
             <div class="social-login">
               <v-btn icon large>
                 <v-icon color="red darken-1">mdi-google</v-icon>
@@ -29,16 +34,27 @@ const { smAndDown } = useDisplay();
         </div>
       </v-col>
 
-      <v-col cols="12" md="6" lg="6" class="d-flex align-center justify-center right-col">
+      <v-col
+        cols="12"
+        md="6"
+        lg="6"
+        class="d-flex align-center justify-center right-col"
+      >
         <v-card class="mx-auto custom-card" elevation="0">
-
           <div v-if="smAndDown" class="mobile-welcome-section">
             <h1 class="gradient-text">Welcome to BookByte</h1>
           </div>
 
-          <v-card-title class="text-center d-flex flex-column align-center justify-center">
-            <v-img src="/images/book-logo.png" :height="smAndDown ? '120px' : '200px'"
-              :width="smAndDown ? '120px' : '200px'" contain class="mx-auto pulsing-image"></v-img>
+          <v-card-title
+            class="text-center d-flex flex-column align-center justify-center"
+          >
+            <v-img
+              src="/images/book-logo.png"
+              :height="smAndDown ? '120px' : '200px'"
+              :width="smAndDown ? '120px' : '200px'"
+              contain
+              class="mx-auto pulsing-image"
+            ></v-img>
             <h2 class="bookbyte font-weight-black">BOOKBYTE</h2>
             <h5>Registration</h5>
           </v-card-title>
@@ -52,15 +68,15 @@ const { smAndDown } = useDisplay();
 
             <h5 class="text-center font-weight-black">
               Already have an account?
-              <RouterLink to="/" class="custom-link">
-                Log in here
-              </RouterLink>
+              <RouterLink to="/" class="custom-link"> Log in here </RouterLink>
             </h5>
           </v-card-text>
 
           <div v-if="smAndDown" class="mobile-social-section">
             <p class="quote-text">Continue to Sign Up?</p>
-            <v-divider class="my-3" style="border-width: 1px; opacity: 0.5;">OR</v-divider>
+            <v-divider class="my-3" style="border-width: 1px; opacity: 0.5"
+              >OR</v-divider
+            >
             <div class="social-login">
               <v-btn icon large>
                 <v-icon color="red darken-1">mdi-google</v-icon>
@@ -86,7 +102,7 @@ const { smAndDown } = useDisplay();
 
 .custom-flex-container {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   height: 100vh;
 }
 
@@ -176,12 +192,14 @@ const { smAndDown } = useDisplay();
 }
 
 .full-height-container {
-  background: linear-gradient(135deg,
-      #000000,
-      #000000,
-      #56104e,
-      #000000,
-      #000000);
+  background: linear-gradient(
+    135deg,
+    #000000,
+    #000000,
+    #56104e,
+    #000000,
+    #000000
+  );
 }
 
 .social-login {
@@ -200,30 +218,17 @@ const { smAndDown } = useDisplay();
   text-decoration: underline;
 }
 
-.custom-link:active,
-.custom-link:focus {
-  color: #b39ddb;
-}
-
-.mobile-social-section {
-  margin-top: 15px;
-  padding-bottom: 10px;
-  text-align: center;
-}
-
-.desktop-social-section {
-  margin-top: 20px;
-  text-align: center;
-}
-
 .mobile-welcome-section {
   text-align: center;
   margin-bottom: 10px;
 }
 
+.brightened-image {
+  filter: brightness(0.8);
+}
+
 /* Pulse Animation */
 @keyframes pulse {
-
   0%,
   100% {
     transform: scale(1);
