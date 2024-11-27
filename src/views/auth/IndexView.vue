@@ -279,26 +279,27 @@ onMounted(() => {
           href="https://web.facebook.com/profile.php?id=61569148684095"
           target="_blank"
         >
-          <v-btn icon class="mx-4 social-btn rotate-on-hover">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover purple-hover">
             <v-icon>mdi-facebook</v-icon>
           </v-btn>
         </a>
         <a href="https://x.com/BOOKBYTE0033" target="_blank">
-          <v-btn icon class="mx-4 social-btn rotate-on-hover">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover purple-hover">
             <v-icon>mdi-twitter</v-icon>
           </v-btn>
         </a>
         <a href="mailto:bookbyteofficial@gmail.com" target="_blank">
-          <v-btn icon class="mx-4 social-btn rotate-on-hover">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover purple-hover">
             <v-icon>mdi-email</v-icon>
           </v-btn>
         </a>
         <a href="https://wa.link/3cdjmb" target="_blank">
-          <v-btn icon class="mx-4 social-btn rotate-on-hover">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover purple-hover">
             <v-icon>mdi-whatsapp</v-icon>
           </v-btn>
         </a>
       </v-row>
+
       >
     </div>
   </v-app>
@@ -718,5 +719,23 @@ p {
 }
 .genre-menu li:hover img {
   transform: rotate(50deg);
+}
+.purple-hover {
+  color: purple;
+  border: 2px solid purple;
+  border-radius: 50%;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.purple-hover:hover {
+  color: plum;
+  border-color: plum;
+}
+
+.rotate-on-hover:hover {
+  transform: rotate(15deg);
+  transition: transform 0.3s ease;
 }
 </style>
