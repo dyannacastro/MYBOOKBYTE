@@ -364,37 +364,37 @@ onUnmounted(() => {
     <div class="divider">
       <span>My Favorite Books</span>
     </div>
-    
+
     <div class="favorite-books-section">
-  <v-row dense>
-    <v-col
-      v-for="book in favoriteBooks"
-      :key="book.id"
-      cols="12"
-      xs="6" 
-      sm="6" 
-      md="4" 
-      lg="3" 
-    >
-      <v-card class="book-card pb-5">
-        <v-img :src="book.coverImage" height="200px"></v-img>
-        <v-card-title>{{ book.title }}</v-card-title>
-        <v-card-subtitle>{{ book.author }}</v-card-subtitle>
-        <v-btn
-                  color="black"
-                  dark
-                  class="read mx-2 mt-5"
-                  @click="readBook(book.id)"
-                  >Read</v-btn
-                >
-      </v-card>
-    </v-col>
-  </v-row>
-  <p v-if="favoriteBooks.length === 0" class="no-favorites-text">
-    You haven't added any favorite books yet.
-  </p>
-</div>
-</div>
+      <v-row dense>
+        <v-col
+          v-for="book in favoriteBooks"
+          :key="book.id"
+          cols="12"
+          xs="6"
+          sm="6"
+          md="4"
+          lg="3"
+        >
+          <v-card class="book-card pb-5">
+            <v-img :src="book.coverImage" height="200px"></v-img>
+            <v-card-title>{{ book.title }}</v-card-title>
+            <v-card-subtitle>{{ book.author }}</v-card-subtitle>
+            <v-btn
+              color="black"
+              dark
+              class="read mx-2 mt-5"
+              @click="readBook(book.id)"
+              >Read</v-btn
+            >
+          </v-card>
+        </v-col>
+      </v-row>
+      <p v-if="favoriteBooks.length === 0" class="no-favorites-text">
+        You haven't added any favorite books yet.
+      </p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -537,19 +537,12 @@ onUnmounted(() => {
 .divider span {
   display: inline-block;
   padding: 0 10px;
-background: linear-gradient(
-    45deg,
-    #000,
-    plum,
-    #262626,
-    #b408a3cf,
-    #64c0ce,
-    #000
-  );  background-size: 200% 200%;
+  background: linear-gradient(45deg, #000, plum, #b408a3cf, #64c0ce, #000);
+  background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.3rem;
   animation: gradient-animation 3s ease infinite;
 }
 
@@ -600,7 +593,7 @@ background: linear-gradient(
   text-align: center;
 }
 
-.v-card-title{
+.v-card-title {
   color: rgb(234, 8, 234);
   font-size: 1rem;
 }

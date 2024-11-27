@@ -275,28 +275,31 @@ onMounted(() => {
 
       <!-- Social Media Section -->
       <v-row justify="center" class="mt-4">
-  <a href="https://web.facebook.com/profile.php?id=61569148684095" target="_blank">
-    <v-btn icon class="mx-4 social-btn rotate-on-hover">
-      <v-icon>mdi-facebook</v-icon>
-    </v-btn>
-  </a>
-  <a href="https://x.com/BOOKBYTE0033" target="_blank">
-    <v-btn icon class="mx-4 social-btn rotate-on-hover">
-      <v-icon>mdi-twitter</v-icon>
-    </v-btn>
-  </a>
-  <a href="mailto:bookbyteofficial@gmail.com" target="_blank">
-    <v-btn icon class="mx-4 social-btn rotate-on-hover">
-      <v-icon>mdi-email</v-icon>
-    </v-btn>
-  </a>
-  <a href="https://wa.link/3cdjmb" target="_blank">
-    <v-btn icon class="mx-4 social-btn rotate-on-hover">
-      <v-icon>mdi-whatsapp</v-icon>
-    </v-btn>
-  </a>
-</v-row>
->
+        <a
+          href="https://web.facebook.com/profile.php?id=61569148684095"
+          target="_blank"
+        >
+          <v-btn icon class="mx-4 social-btn rotate-on-hover">
+            <v-icon>mdi-facebook</v-icon>
+          </v-btn>
+        </a>
+        <a href="https://x.com/BOOKBYTE0033" target="_blank">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover">
+            <v-icon>mdi-twitter</v-icon>
+          </v-btn>
+        </a>
+        <a href="mailto:bookbyteofficial@gmail.com" target="_blank">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover">
+            <v-icon>mdi-email</v-icon>
+          </v-btn>
+        </a>
+        <a href="https://wa.link/3cdjmb" target="_blank">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover">
+            <v-icon>mdi-whatsapp</v-icon>
+          </v-btn>
+        </a>
+      </v-row>
+      >
     </div>
   </v-app>
 </template>
@@ -580,7 +583,7 @@ p {
 }
 
 .social-btn:hover .v-icon {
-  color: plum;
+  color: purple;
 }
 
 .social-btn:active .v-icon {
@@ -712,5 +715,8 @@ p {
   100% {
     transform: translateX(0);
   }
+}
+.genre-menu li:hover img {
+  transform: rotate(50deg);
 }
 </style>
