@@ -250,6 +250,22 @@ watch(tabs, newGenre => {
   fetchItems(newGenre)
 })
 
+// Watch `tabs` for genre changes
+watch(tabs, newGenre => fetchItems(newGenre))
+
+// Watch `searchQuery` to reload books if input is cleared manually
+watch(searchQuery, newQuery => {
+  if (newQuery.trim() === '') {
+    fetchItems(tabs.value)
+  }
+})
+
+// Method to handle the clear (X) button click in the text field
+function clearSearch() {
+  searchQuery.value = ''
+  fetchItems(tabs.value)
+}
+
 // Fetch items and run typing animation when the component is mounted
 onMounted(() => {
   console.log(
@@ -326,37 +342,30 @@ export default {
               label="Search by title"
               prepend-inner-icon="mdi-magnify"
               clearable
+              @click:clear="clearSearch"
               class="mx-auto rounded-pill-search"
               :loading="loading"
               color="#E1BEE7"
-            >
-            </v-text-field>
+            ></v-text-field>
           </v-col>
         </v-row>
 
         <!-- Genres Section -->
         <h3 class="gradient-text my-4">BOOK GENRES</h3>
         <v-row class="genre-icons my-4" justify="center">
-  <v-col
-    v-for="genre in genres"
-    :key="genre"
-    cols="6"  
-    md="3"    
-    lg="2"    
-  >
-    <v-btn
-      class="genre-icon gradient-button"
-      :class="{ active: tabs === genre }"
-      @click="tabs = genre"
-      elevation="2"
-      block
-      rounded
-    >
-      {{ genre.charAt(0).toUpperCase() + genre.slice(1) }}
-    </v-btn>
-  </v-col>
-</v-row>
-
+          <v-col v-for="genre in genres" :key="genre" cols="6" md="3" lg="2">
+            <v-btn
+              class="genre-icon gradient-button"
+              :class="{ active: tabs === genre }"
+              @click="tabs = genre"
+              elevation="2"
+              block
+              rounded
+            >
+              {{ genre.charAt(0).toUpperCase() + genre.slice(1) }}
+            </v-btn>
+          </v-col>
+        </v-row>
 
         <v-divider></v-divider>
 
@@ -438,7 +447,7 @@ export default {
 }
 
 .text {
-  background: linear-gradient(45deg, #b909fe, #64c0ce, #b909fe); 
+  background: linear-gradient(45deg, #b909fe, #64c0ce, #b909fe);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -458,7 +467,7 @@ export default {
 }
 
 .error {
-  color: red;
+  color: rgb(252, 1, 1);
   font-weight: bold;
 }
 
@@ -537,7 +546,7 @@ export default {
   justify-content: center;
   color: white;
   transition: background-color 0.3s;
-  width: 100%;  /* Ensures the button takes up the full width of its column */
+  width: 100%;
 }
 
 .genre-icon.active {
@@ -564,5 +573,4 @@ export default {
 .gradient-button:hover {
   background: linear-gradient(45deg, #b909fe, #64c0ce, #b909fe);
 }
-
 </style>
