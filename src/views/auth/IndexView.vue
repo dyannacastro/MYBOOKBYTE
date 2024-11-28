@@ -146,15 +146,6 @@ const instructions = ref([
                 How to Use BookByte
               </v-card-title>
 
-              <v-row justify="center" align="center">
-                <v-col cols="12" sm="10" md="8" lg="6">
-                  <span class="instruction-subtitle">
-                    Discover stories through the power of technology on
-                    BookByte.
-                  </span>
-                </v-col>
-              </v-row>
-
               <v-card-text>
                 <v-row>
                   <v-col
@@ -434,12 +425,12 @@ export default {
 .instruction-card {
   background-color: #1e1e2f;
   color: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 10px;
 }
 
 .instruction-title {
-  font-size: 30px;
+  font-size: 25px;
   color: plum;
   font-weight: bold;
   text-align: center;
