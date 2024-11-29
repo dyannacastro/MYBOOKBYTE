@@ -10,6 +10,23 @@ onMounted(() => {
     isLoading.value = false
   }, 3000)
 })
+const instructions = ref([
+  {
+    title: 'Browse the Library',
+    description:
+      'Explore a wide collection of technology books by genre, search by titles, or see what’s popular.',
+  },
+  {
+    title: 'Add to Favorites',
+    description:
+      'Click the heart icon to save books to your personal Favorites list for easy access anytime.',
+  },
+  {
+    title: 'Profile',
+    description:
+      'View your favorite books, monitor reading progress, and read directly from your profile.',
+  },
+])
 </script>
 
 <template>
@@ -121,48 +138,41 @@ onMounted(() => {
         </v-row>
       </v-container>
 
-      <!-- Book Gallery Section -->
       <v-container class="mt-16">
         <v-row>
-          <v-col v-for="book in books" :key="book.id" cols="12" sm="4" md="4">
-            <v-card class="book-card">
-              <v-img :src="book.image" class="book-image" contain></v-img>
-              <v-card-title class="book-title">{{ book.title }}</v-card-title>
-              <v-card-subtitle>{{ book.author }}</v-card-subtitle>
-              <v-card-text>{{ book.description }}</v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <!-- Terms of Use Section -->
-      <v-container class="mt-10">
-        <v-row>
           <v-col cols="12">
-            <v-card flat class="terms-card">
-              <v-card-title class="term-n-use">Terms of Use</v-card-title>
+            <v-card flat class="instruction-card">
+              <v-card-title class="instruction-title">
+                How to Use BookByte
+              </v-card-title>
+
               <v-card-text>
-                By accessing and using this website, you agree to the following
-                terms and conditions. The platform allows users to search for
-                and read books online. All content available through the website
-                may be protected by copyright laws, and users should be aware
-                that the availability of books for reading may vary by region.
-                <br /><br />
-                The website is designed for use by human users only. Automated
-                tools or bots that scrape or misuse the platform may be blocked
-                from accessing the site. To ensure a smooth experience and
-                maintain platform integrity, cookies and related technologies
-                may be used.
-                <br /><br />
-                Users are permitted to search for and read books on the platform
-                for personal, non-commercial use. Any redistribution of content
-                or use beyond personal reading is prohibited without proper
-                authorization from the copyright holder.
-                <br /><br />
-                By using this platform, you consent to the collection of data as
-                outlined in our Privacy Policy, and you agree to comply with
-                these Terms of Use. Violation of these terms may result in the
-                suspension of access to the site.
+                <v-row>
+                  <v-col
+                    v-for="(step, index) in instructions"
+                    :key="index"
+                    cols="12"
+                    md="6"
+                    lg="4"
+                  >
+                    <v-list-item>
+                      <v-list-item-icon>
+                        <v-icon color="mint-green" size="40px">
+                          mdi-numeric-{{ index + 1 }}-box
+                        </v-icon>
+                      </v-list-item-icon>
+
+                      <v-list-item-content>
+                        <v-list-item-title class="text-h6">{{
+                          step.title
+                        }}</v-list-item-title>
+                        <v-list-item-subtitle class="text-body1">{{
+                          step.description
+                        }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-card>
           </v-col>
@@ -273,30 +283,81 @@ onMounted(() => {
         </nav>
       </section>
 
+      <!-- Book Gallery Section -->
+      <v-container class="mt-16">
+        <v-row>
+          <v-col v-for="book in books" :key="book.id" cols="12" sm="4" md="4">
+            <v-card class="book-card">
+              <v-img :src="book.image" class="book-image" contain></v-img>
+              <v-card-title class="book-title">{{ book.title }}</v-card-title>
+              <v-card-subtitle>{{ book.author }}</v-card-subtitle>
+              <v-card-text>{{ book.description }}</v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <!-- Terms of Use Section -->
+      <v-container class="mt-10">
+        <v-row>
+          <v-col cols="12">
+            <v-card flat class="terms-card">
+              <v-card-title class="term-n-use">Terms of Use</v-card-title>
+              <v-card-text>
+                By accessing and using this website, you agree to the following
+                terms and conditions. The platform allows users to search for
+                and read books online. All content available through the website
+                may be protected by copyright laws, and users should be aware
+                that the availability of books for reading may vary by region.
+                <br /><br />
+                The website is designed for use by human users only. Automated
+                tools or bots that scrape or misuse the platform may be blocked
+                from accessing the site. To ensure a smooth experience and
+                maintain platform integrity, cookies and related technologies
+                may be used.
+                <br /><br />
+                Users are permitted to search for and read books on the platform
+                for personal, non-commercial use. Any redistribution of content
+                or use beyond personal reading is prohibited without proper
+                authorization from the copyright holder.
+                <br /><br />
+                By using this platform, you consent to the collection of data as
+                outlined in our Privacy Policy, and you agree to comply with
+                these Terms of Use. Violation of these terms may result in the
+                suspension of access to the site.
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+
       <!-- Social Media Section -->
       <v-row justify="center" class="mt-4">
-  <a href="https://web.facebook.com/profile.php?id=61569148684095" target="_blank">
-    <v-btn icon class="mx-4 social-btn rotate-on-hover">
-      <v-icon>mdi-facebook</v-icon>
-    </v-btn>
-  </a>
-  <a href="https://x.com/BOOKBYTE0033" target="_blank">
-    <v-btn icon class="mx-4 social-btn rotate-on-hover">
-      <v-icon>mdi-twitter</v-icon>
-    </v-btn>
-  </a>
-  <a href="mailto:bookbyteofficial@gmail.com" target="_blank">
-    <v-btn icon class="mx-4 social-btn rotate-on-hover">
-      <v-icon>mdi-email</v-icon>
-    </v-btn>
-  </a>
-  <a href="https://wa.link/3cdjmb" target="_blank">
-    <v-btn icon class="mx-4 social-btn rotate-on-hover">
-      <v-icon>mdi-whatsapp</v-icon>
-    </v-btn>
-  </a>
-</v-row>
->
+        <a
+          href="https://web.facebook.com/profile.php?id=61569148684095"
+          target="_blank"
+        >
+          <v-btn icon class="mx-4 social-btn rotate-on-hover purple-hover">
+            <v-icon>mdi-facebook</v-icon>
+          </v-btn>
+        </a>
+        <a href="https://x.com/BOOKBYTE0033" target="_blank">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover purple-hover">
+            <v-icon>mdi-twitter</v-icon>
+          </v-btn>
+        </a>
+        <a href="mailto:bookbyteofficial@gmail.com" target="_blank">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover purple-hover">
+            <v-icon>mdi-email</v-icon>
+          </v-btn>
+        </a>
+        <a href="https://wa.link/3cdjmb" target="_blank">
+          <v-btn icon class="mx-4 social-btn rotate-on-hover purple-hover">
+            <v-icon>mdi-whatsapp</v-icon>
+          </v-btn>
+        </a>
+      </v-row>
+      >
     </div>
   </v-app>
 </template>
@@ -361,6 +422,32 @@ export default {
 </script>
 
 <style>
+.instruction-card {
+  background-color: #1e1e2f;
+  color: white;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.instruction-title {
+  font-size: 25px;
+  color: plum;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.v-list-item-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: violet;
+}
+
+.v-list-item-subtitle {
+  font-size: 14px;
+  color: #d1d1d1;
+}
+
 .bordered {
   border: 5px solid rgb(11);
   transition: box-shadow 0.3s ease-in-out;
@@ -580,7 +667,7 @@ p {
 }
 
 .social-btn:hover .v-icon {
-  color: plum;
+  color: purple;
 }
 
 .social-btn:active .v-icon {
@@ -712,5 +799,26 @@ p {
   100% {
     transform: translateX(0);
   }
+}
+.genre-menu li:hover img {
+  transform: rotate(50deg);
+}
+.purple-hover {
+  color: purple;
+  border: 2px solid purple;
+  border-radius: 50%;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.purple-hover:hover {
+  color: plum;
+  border-color: plum;
+}
+
+.rotate-on-hover:hover {
+  transform: rotate(15deg);
+  transition: transform 0.3s ease;
 }
 </style>
