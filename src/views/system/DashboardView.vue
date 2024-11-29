@@ -85,7 +85,6 @@ const isFavorite = bookId => {
 // Function to toggle favorite
 const toggleFavorite = async book => {
   try {
-    // Step 1: Retrieve book's ID from Supabase
     const { data: bookData, error: fetchError } = await supabase
       .from('books')
       .select('id')
@@ -98,16 +97,14 @@ const toggleFavorite = async book => {
       return
     }
 
-    const bookId = bookData.id // Use this integer ID from Supabase
+    const bookId = bookData.id
 
-    // Step 2: Get the user ID
     const userId = await getUserId()
     if (!userId) {
       console.error('User not authenticated. Unable to toggle favorite.')
       return
     }
 
-    // Step 3: Add or remove from favorites
     if (isFavorite(bookId)) {
       alertMessage.value = `Removing book from favorites: "${book.title}".`
       showAlert.value = true
@@ -120,7 +117,6 @@ const toggleFavorite = async book => {
       alertMessage.value = `Adding book to favorites: ${book.title}`
       showAlert.value = true 
 
-      // Add favorite to Supabase if it doesn't already exist
       await addFavoriteToSupabase(bookId, userId)
       favoritesStore.addFavorite({
         id: bookId,
