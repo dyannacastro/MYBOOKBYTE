@@ -542,7 +542,7 @@ onUnmounted(() => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  font-size: 1.3rem;
+  font-size: 1rem;
   animation: gradient-animation 3s ease infinite;
 }
 
