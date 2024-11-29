@@ -3,7 +3,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import { ref, computed, watch, onMounted } from 'vue'
 import axios from 'axios'
 import { useFavoritesStore } from '@/stores/userFavorites'
-import { supabase } from '@/utils/supabase' // Import the Supabase instance
+import { supabase } from '@/utils/supabase' 
 
 const isDrawerVisible = ref(true)
 const tabs = ref('fiction')
@@ -11,8 +11,8 @@ const cards = ref([])
 const searchQuery = ref('')
 const loading = ref(false)
 const error = ref(null)
-const showAlert = ref(false) // Used for Snackbar visibility
-const alertMessage = ref('') // Snackbar message
+const showAlert = ref(false) 
+const alertMessage = ref('') 
 
 const genres = ref([
   'fiction',
@@ -110,15 +110,15 @@ const toggleFavorite = async book => {
     // Step 3: Add or remove from favorites
     if (isFavorite(bookId)) {
       alertMessage.value = `Removing book from favorites: "${book.title}".`
-      showAlert.value = true // Show snackbar
+      showAlert.value = true
 
       console.log(`Removing book from favorites: ${book.title}`)
       await removeFavoriteFromSupabase(bookId, userId)
-      favoritesStore.removeFavorite(bookId) // Update local state to reflect removed favorite
+      favoritesStore.removeFavorite(bookId) 
     } else {
       console.log(`Adding book to favorites: ${book.title}`)
       alertMessage.value = `Adding book to favorites: ${book.title}`
-      showAlert.value = true // Show snackbar
+      showAlert.value = true 
 
       // Add favorite to Supabase if it doesn't already exist
       await addFavoriteToSupabase(bookId, userId)
@@ -137,7 +137,6 @@ const toggleFavorite = async book => {
 // Function to add a favorite to Supabase
 const addFavoriteToSupabase = async (bookId, userId) => {
   try {
-    // Insert favorite into Supabase
     const { error } = await supabase
       .from('favorites')
       .insert([{ user_id: userId, book_id: bookId }])
@@ -156,7 +155,6 @@ const addFavoriteToSupabase = async (bookId, userId) => {
 // Function to remove a favorite from Supabase
 const removeFavoriteFromSupabase = async (bookId, userId) => {
   try {
-    // Delete favorite from Supabase
     const { error } = await supabase
       .from('favorites')
       .delete()
@@ -273,7 +271,7 @@ onMounted(() => {
   )
   typeText()
   fetchItems(tabs.value)
-  fetchUserFavorites() // Fetch user's favorites on mount
+  fetchUserFavorites() 
 })
 
 // Computed property for filtering books based on the search query
@@ -336,7 +334,6 @@ export default {
         <v-row justify="center">
           <v-col cols="12" sm="8" md="6" class="search">
             <h2 class="text my-4 text-center">{{ displayedText }}</h2>
-            <!-- Typing effect -->
             <v-text-field
               v-model="searchQuery"
               label="Search by title"
