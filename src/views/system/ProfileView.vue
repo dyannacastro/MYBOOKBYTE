@@ -1,4 +1,4 @@
-<script setup>
+"<script setup>
 import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { supabase } from '@/utils/supabase'
@@ -15,6 +15,101 @@ const user = ref({
 const profileImage = ref(user.value.profilePicture)
 const coverImage = ref(user.value.coverPhoto)
 const favoriteBooks = ref([])
+
+const readBook = (booksUrl) => {
+  if (booksUrl) {
+    // Create a modal or overlay to display the loading spinner and iframe
+    const existingModal = document.getElementById('pdfModal');
+    if (existingModal) {
+      // If modal already exists, remove it to prevent duplicates
+      existingModal.remove();
+    }
+
+    // Create a new modal for the PDF viewer
+    const modal = document.createElement('div');
+    modal.id = 'pdfModal';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    modal.style.zIndex = '1000';
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+
+    // Add loading indicator
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.id = 'loadingIndicator';
+    loadingIndicator.style.display = 'flex';
+    loadingIndicator.style.flexDirection = 'column'; // Stack elements vertically
+    loadingIndicator.style.alignItems = 'center'; // Horizontally center the content
+    loadingIndicator.style.justifyContent = 'center'; // Vertically center the content
+    loadingIndicator.style.height = '100%'; // Take full height of the container
+    loadingIndicator.style.color = '#fff';
+
+    loadingIndicator.innerHTML = `
+  <p style="margin-bottom: 10px;">Loading preview, please wait...</p>
+  <div style="
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #9C27B0;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  "></div>
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+`;
+
+    // Add iframe for the PDF
+    const iframe = document.createElement('iframe');
+    iframe.id = 'pdfViewer';
+    iframe.src = booksUrl;
+    iframe.style.width = '80%';
+    iframe.style.height = '80%';
+    iframe.style.border = 'none';
+    iframe.style.display = 'none'; // Initially hide until loaded
+
+    // Handle iframe load event
+    iframe.onload = () => {
+      loadingIndicator.style.display = 'none'; // Hide loading indicator
+      iframe.style.display = 'block'; // Show iframe
+    };
+
+    const backButton = document.createElement('button');
+    backButton.innerText = 'Close';
+    backButton.style.margin = '10px'; // Uniform margin
+    backButton.style.marginTop = '20px'; 
+    backButton.style.marginBottom = '3px'; // Extra space below the button
+    backButton.style.padding = '5px 20px'; // Padding inside the button
+    backButton.style.backgroundColor = '#9C27B0';
+    backButton.style.color = '#fff';
+    backButton.style.border = 'none';
+    backButton.style.borderRadius = '5px';
+    backButton.style.cursor = 'pointer';
+
+    backButton.onclick = () => {
+      modal.remove(); // Remove modal when back button is clicked
+    };
+
+    // Append elements to modal
+    modal.appendChild(backButton);
+    modal.appendChild(loadingIndicator);
+    modal.appendChild(iframe);
+
+    // Append modal to body
+    document.body.appendChild(modal);
+  } else {
+    alert('No PDF available for this book.');
+  }
+};
 
 const quotes = ref([
   {
@@ -117,54 +212,69 @@ const stopQuoteRotation = () => {
   }
 }
 
-const handleImageChange = (event, type) => {
-  const file = event.target.files[0]
+const handleImageChange = async (event, type) => {
+  const file = event.target.files[0]; // Get the selected file
   if (file) {
-    const reader = new FileReader()
-    reader.onloadend = () => {
+    const reader = new FileReader(); // For preview purposes
+    reader.onloadend = async () => {
+      // Convert the image file to a Base64 string
+      const base64String = reader.result;
+
+      // Update the appropriate image URL in your state
       if (type === 'profile') {
-        profileImage.value = reader.result
+        profileImage.value = base64String; // Save Base64 in state
       } else if (type === 'cover') {
-        coverImage.value = reader.result
+        coverImage.value = base64String; // Save Base64 in state
       }
-    }
-    reader.readAsDataURL(file)
+
+      // Now that the image is converted, save the profile to the database
+      await saveProfile(); // Call saveProfile to update the `user_profile` table
+    };
+    reader.readAsDataURL(file); // Convert the file to Base64
   }
-}
+};
+
+
 
 const saveProfile = async () => {
   try {
-    const { data: sessionData, error: sessionError } =
-      await supabase.auth.getSession()
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) {
-      console.error('Error fetching session:', sessionError)
-      return
+      console.error('Error fetching session:', sessionError);
+      return;
     }
 
-    const userId = sessionData?.session?.user?.id
+    const userId = sessionData?.session?.user?.id;
     if (!userId) {
-      console.error('User is not logged in.')
-      return
+      console.error('User is not logged in.');
+      return;
     }
 
+    // Prepare the update object with the URLs of the profile and cover images
     const updates = {
       user_id: userId,
-      img: profileImage.value,
-      cover_img: coverImage.value,
-    }
+      profile_pictures: profileImage.value, // Update profile picture
+      cover_photo: coverImage.value, // Update cover photo
+    };
 
+    // Debug: log the update object to see the values
+    console.log('Saving profile with data:', updates);
+
+    // Update the user's profile in the database
     const { error } = await supabase
       .from('user_profile')
-      .upsert(updates, { onConflict: ['user_id'] })
+      .upsert(updates, { onConflict: ['user_id'] }); // Use `onConflict` to handle existing profiles
+
     if (error) {
-      console.error('Error saving profile:', error)
+      console.error('Error saving profile:', error);
     } else {
-      console.log('Profile saved successfully!', user.value)
+      console.log('Profile saved successfully!');
     }
   } catch (err) {
-    console.error('Unexpected error while saving profile:', err)
+    console.error('Unexpected error while saving profile:', err);
   }
-}
+};
+
 
 const goBack = () => {
   router.push({ name: 'dashboard' })
@@ -199,7 +309,7 @@ const fetchFavoriteBooks = async () => {
 
     const { data: favoritesData, error: favoritesError } = await supabase
       .from('favorites')
-      .select('book_id, books (title, author, cover_image)')
+      .select('book_id, books (title, author, cover_image, pdf_url)')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
@@ -214,6 +324,7 @@ const fetchFavoriteBooks = async () => {
       title: fav.books.title,
       author: fav.books.author,
       coverImage: fav.books.cover_image,
+      booksUrl: fav.books.pdf_url,
     }))
   } catch (err) {
     console.error('Unexpected error while fetching favorite books:', err)
@@ -221,70 +332,69 @@ const fetchFavoriteBooks = async () => {
 }
 
 onMounted(async () => {
-  resetUserProfileToDefaults()
+  resetUserProfileToDefaults(); // Reset the profile to default values initially
 
   try {
-    const { data: sessionData, error: sessionError } =
-      await supabase.auth.getSession()
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) {
-      console.error('Error fetching session:', sessionError)
-      return
+      console.error('Error fetching session:', sessionError);
+      return;
     }
 
-    const userId = sessionData?.session?.user?.id
+    const userId = sessionData?.session?.user?.id;
     if (!userId) {
-      console.error('User is not logged in.')
-      return
+      console.error('User is not logged in.');
+      return;
     }
 
-    const { data: userData, error: userFetchError } =
-      await supabase.auth.getUser()
+    // Fetch user metadata from Supabase auth
+    const { data: userData, error: userFetchError } = await supabase.auth.getUser();
     if (userFetchError) {
-      console.error('Error fetching user details:', userFetchError)
-      return
+      console.error('Error fetching user details:', userFetchError);
+      return;
     }
 
     if (userData?.user) {
-      user.value.displayName =
-        userData.user.user_metadata?.display_name || 'No Name'
-      user.value.email = userData.user.email || ''
+      user.value.displayName = userData.user.user_metadata?.display_name || 'No Name';
+      user.value.email = userData.user.email || '';
     } else {
-      console.error('No user data found in session.')
-      return
+      console.error('No user data found in session.');
+      return;
     }
 
+    // Fetch the user's profile from the `user_profile` table
     const { data, error: profileFetchError } = await supabase
       .from('user_profile')
       .select('*')
       .eq('user_id', userId)
-      .maybeSingle()
+      .maybeSingle();
 
     if (profileFetchError) {
-      console.error('Error fetching profile:', profileFetchError)
+      console.error('Error fetching profile:', profileFetchError);
     } else if (data) {
-      user.value.profilePicture = data.img || user.value.profilePicture
-      user.value.coverPhoto = data.cover_img || user.value.coverPhoto
+      user.value.profilePicture = data.profile_pictures || user.value.profilePicture;
+      user.value.coverPhoto = data.cover_photo || user.value.coverPhoto;
 
-      profileImage.value = user.value.profilePicture
-      coverImage.value = user.value.coverPhoto
-      console.log('Profile fetched successfully!', data)
+      profileImage.value = user.value.profilePicture;
+      coverImage.value = user.value.coverPhoto;
+      console.log('Profile fetched successfully!', data);
     }
 
     // Fetch the user's favorite books
-    await fetchFavoriteBooks()
+    await fetchFavoriteBooks();
 
     // Start rotating quotes when the profile page is mounted
-    startQuoteRotation()
+    startQuoteRotation();
   } catch (err) {
-    console.error('Unexpected error while fetching profile:', err)
+    console.error('Unexpected error while fetching profile:', err);
   }
-})
+});
 
 // Clear the interval when the component is destroyed
 onUnmounted(() => {
   stopQuoteRotation()
 })
-</script>
+</script>"
 
 <template>
   <div class="profile-container">
@@ -384,7 +494,7 @@ onUnmounted(() => {
               color="black"
               dark
               class="read mx-2 mt-5"
-              @click="readBook(book.id)"
+              @click="readBook(book.booksUrl)"
               >Read</v-btn
             >
           </v-card>
