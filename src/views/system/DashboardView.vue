@@ -3,7 +3,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import { ref, computed, watch, onMounted } from 'vue'
 import axios from 'axios'
 import { useFavoritesStore } from '@/stores/userFavorites'
-import { supabase } from '@/utils/supabase' 
+import { supabase } from '@/utils/supabase'
 
 const isDrawerVisible = ref(true)
 const tabs = ref('fiction')
@@ -11,8 +11,8 @@ const cards = ref([])
 const searchQuery = ref('')
 const loading = ref(false)
 const error = ref(null)
-const showAlert = ref(false) 
-const alertMessage = ref('') 
+const showAlert = ref(false)
+const alertMessage = ref('')
 
 const genres = ref([
   'fiction',
@@ -111,11 +111,11 @@ const toggleFavorite = async book => {
 
       console.log(`Removing book from favorites: ${book.title}`)
       await removeFavoriteFromSupabase(bookId, userId)
-      favoritesStore.removeFavorite(bookId) 
+      favoritesStore.removeFavorite(bookId)
     } else {
       console.log(`Adding book to favorites: ${book.title}`)
       alertMessage.value = `Adding book to favorites: ${book.title}`
-      showAlert.value = true 
+      showAlert.value = true
 
       await addFavoriteToSupabase(bookId, userId)
       favoritesStore.addFavorite({
@@ -168,6 +168,7 @@ const removeFavoriteFromSupabase = async (bookId, userId) => {
   }
 }
 
+
 // Function to handle typing effect in the UI
 const fullText = 'What book do you want to search today?'
 const displayedText = ref('')
@@ -181,27 +182,28 @@ const typeText = async () => {
 
 // Function to fetch books from the API and insert them into the Supabase books table
 const fetchItems = async genre => {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
-    console.log(`Fetching books for genre: ${genre}`)
+    console.log(`Fetching books for genre: ${genre}`);
 
-    // Fetch books from the OpenLibrary API
     const response = await axios.get(
-      `https://openlibrary.org/subjects/${genre}.json`,
-    )
-    console.log('Fetched books data:', response.data)
+      `https://openlibrary.org/subjects/${genre}.json`
+    );
+    console.log('Fetched books data:', response.data);
 
-    // Map the response data to match the local cards structure
-    cards.value = response.data.works.map(book => ({
-      title: book.title,
+    cards.value = response.data.works.map((book, index) => ({
+      id: book.key || `temp-id-${index}`, // Ensure unique ID
+      title: book.title || 'Untitled Book',
       src: book.cover_id
         ? `https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg`
         : 'default-image.jpg',
-      id: book.key,
       author: book.authors?.[0]?.name || 'Unknown Author',
       flex: 4,
-    }))
+      booksUrl: book.key
+        ? `https://openlibrary.org${book.key}.pdf` // Assign book-specific PDF URL
+        : null, // No URL for this book
+    }));
 
     // Transform the books data to match the Supabase table structure
     const transformedBooks = response.data.works.map(book => ({
@@ -211,32 +213,95 @@ const fetchItems = async genre => {
         : null,
       author: book.authors?.[0]?.name || 'Unknown Author',
       genre: genre,
-    }))
+    }));
 
-    console.log('Transformed books data for Supabase:', transformedBooks)
+    console.log('Transformed books data for Supabase:', transformedBooks);
 
     // Insert the transformed books into the Supabase books table
-    console.log('Attempting to save books to Supabase...')
+    console.log('Attempting to save books to Supabase...');
     const { data, error: supabaseError } = await supabase
       .from('books')
-      .upsert(transformedBooks, { onConflict: ['title', 'author'] })
+      .upsert(transformedBooks, { onConflict: ['title', 'author'] });
 
     if (supabaseError) {
       console.error(
         'Error inserting books into Supabase:',
-        supabaseError.message,
-      )
+        supabaseError.message
+      );
     } else {
-      console.log('Books successfully saved in Supabase:', data)
+      console.log('Books successfully saved in Supabase:', data);
     }
   } catch (error) {
-    error.value = 'Failed to load items. Please try again later.'
-    console.error('Error fetching books:', error)
+    error.value = 'Failed to load items. Please try again later.';
+    console.error('Error fetching books:', error);
   } finally {
-    loading.value = false
-    console.log('Finished fetching books, loading:', loading.value)
+    loading.value = false;
+    console.log('Finished fetching books, loading:', loading.value);
   }
-}
+};
+
+
+// Open book URL with a back button and loading indicator for returning
+const readBook = (booksUrl) => {
+  if (booksUrl) {
+    // Keep the current dashboard URL intact for navigation
+    const dashboardUrl = window.location.href;
+
+    // Replace the body content for loading spinner and PDF display
+    document.body.innerHTML = `
+      <button onclick="window.location.href='${dashboardUrl}'" style="
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        padding: 10px 15px;
+        background-color: #9C27B0;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 1000;
+      ">Back to Dashboard</button>
+
+      <div id="loadingIndicator" style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #6200ea;
+      ">
+        <p>Loading preview, please wait...</p>
+        <div style="
+          border: 5px solid #f3f3f3;
+          border-top: 5px solid #9C27B0;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          animation: spin 1s linear infinite;
+          margin-top: 10px;
+        "></div>
+      </div>
+
+      <iframe id="pdfViewer" src="${booksUrl}" style="position: absolute; top: 60px; left: 0; width: 100%; height: calc(100% - 60px); border: none; display: none;"></iframe>
+
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+
+    // Show the PDF after it's fully loaded
+    const iframe = document.getElementById('pdfViewer');
+    iframe.onload = () => {
+      document.getElementById('loadingIndicator').style.display = 'none'; // Hide spinner
+      iframe.style.display = 'block'; // Show PDF
+    };
+  } else {
+    alert('No PDF available for this book.');
+  }
+};
 
 // Watch the `tabs` variable for changes and fetch new items when the genre changes
 watch(tabs, newGenre => {
@@ -267,7 +332,7 @@ onMounted(() => {
   )
   typeText()
   fetchItems(tabs.value)
-  fetchUserFavorites() 
+  fetchUserFavorites()
 })
 
 // Computed property for filtering books based on the search query
@@ -299,29 +364,16 @@ export default {
 </script>
 
 <template>
-  <AppLayout
-    :is-with-app-bar-nav-icon="true"
-    @is-drawer-visible="isDrawerVisible = !isDrawerVisible"
-  >
+  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
     <template #content>
       <v-container class="dashboard">
         <h3 class="gradient-text"></h3>
 
         <!-- Carousel Section -->
-        <v-carousel
-          cycle
-          height="400"
-          hide-arrows
-          hide-delimiters
-          :interval="4000"
-        >
+        <v-carousel cycle height="400" hide-arrows hide-delimiters :interval="4000">
           <v-carousel-item v-for="(slide, i) in slides" :key="i">
             <v-img :src="slide.image" height="100%">
-              <v-row
-                class="fill-height"
-                align="center"
-                justify="center"
-              ></v-row>
+              <v-row class="fill-height" align="center" justify="center"></v-row>
             </v-img>
           </v-carousel-item>
         </v-carousel>
@@ -330,16 +382,9 @@ export default {
         <v-row justify="center">
           <v-col cols="12" sm="8" md="6" class="search">
             <h2 class="text my-4 text-center">{{ displayedText }}</h2>
-            <v-text-field
-              v-model="searchQuery"
-              label="Search by title"
-              prepend-inner-icon="mdi-magnify"
-              clearable
-              @click:clear="clearSearch"
-              class="mx-auto rounded-pill-search"
-              :loading="loading"
-              color="#E1BEE7"
-            ></v-text-field>
+            <v-text-field v-model="searchQuery" label="Search by title" prepend-inner-icon="mdi-magnify" clearable
+              @click:clear="clearSearch" class="mx-auto rounded-pill-search" :loading="loading"
+              color="#E1BEE7"></v-text-field>
           </v-col>
         </v-row>
 
@@ -347,14 +392,8 @@ export default {
         <h3 class="gradient-text my-4">BOOK GENRES</h3>
         <v-row class="genre-icons my-4" justify="center">
           <v-col v-for="genre in genres" :key="genre" cols="6" md="3" lg="2">
-            <v-btn
-              class="genre-icon gradient-button"
-              :class="{ active: tabs === genre }"
-              @click="tabs = genre"
-              elevation="2"
-              block
-              rounded
-            >
+            <v-btn class="genre-icon gradient-button" :class="{ active: tabs === genre }" @click="tabs = genre"
+              elevation="2" block rounded>
               {{ genre.charAt(0).toUpperCase() + genre.slice(1) }}
             </v-btn>
           </v-col>
@@ -366,52 +405,22 @@ export default {
         <h3 class="gradient-text my-4">SEARCH RESULTS</h3>
         <v-row dense>
           <v-col v-if="loading" cols="12" class="text-center">
-            <v-progress-circular
-              indeterminate
-              color="purple"
-              class="ma-3"
-            ></v-progress-circular>
+            <v-progress-circular indeterminate color="purple" class="ma-3"></v-progress-circular>
             <p class="loading-text">Loading books...</p>
           </v-col>
-          <v-col
-            v-else
-            v-for="card in filteredCards"
-            :key="card.id"
-            :cols="12"
-            sm="6"
-            md="4"
-            lg="3"
-          >
+          <v-col v-else v-for="card in filteredCards" :key="card.id" :cols="12" sm="6" md="4" lg="3">
             <v-card class="heart mt-15">
-              <v-img
-                :src="card.src"
-                class="white--text align-end"
-                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                height="200px"
-              ></v-img>
-              <v-card-title
-                v-text="card.title"
-                class="card-title"
-              ></v-card-title>
+              <v-img :src="card.src" class="white--text align-end" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                height="200px"></v-img>
+              <v-card-title>{{ card.title }}</v-card-title>
               <v-card-actions>
-                <v-btn
-                  color="purple"
-                  dark
-                  class="bordered mx-2 mt-5"
-                  @click="readBook(book.id)"
-                  >Read</v-btn
-                >
+                <!-- Pass the correct booksUrl to readBook -->
+                <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(card.booksUrl)">
+                  Read
+                </v-btn>
                 <v-spacer></v-spacer>
-                <v-btn
-                  color="white"
-                  dark
-                  class="glow mx-2 mt-5"
-                  icon
-                  @click="toggleFavorite(card)"
-                >
-                  <v-icon :color="isFavorite(card.id) ? 'purple' : ''"
-                    >mdi-heart</v-icon
-                  >
+                <v-btn color="white" dark class="glow mx-2 mt-5" icon @click="toggleFavorite(card)">
+                  <v-icon :color="isFavorite(card.id) ? 'purple' : ''">mdi-heart</v-icon>
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -451,9 +460,11 @@ export default {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -519,9 +530,11 @@ export default {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -543,14 +556,12 @@ export default {
 }
 
 .genre-icon.active {
-  background: linear-gradient(
-    45deg,
-    #b909fe,
-    #64c0ce,
-    #64c0ce,
-    #64c0ce,
-    #b909fe
-  );
+  background: linear-gradient(45deg,
+      #b909fe,
+      #64c0ce,
+      #64c0ce,
+      #64c0ce,
+      #b909fe);
 }
 
 .genre-icon:not(.active) {
