@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase'
 
 const isDrawerVisible = ref(false)
-const favoriteBooks = ref([])
+const favoriteBooks = ref([]) // This will hold the list of favorite books
 const userEmail = ref(null)
 const userId = ref(null)
 const router = useRouter()
@@ -21,267 +21,225 @@ const fetchFavoritesFromSupabase = async () => {
 
     console.log('Fetching favorite books for user ID:', userId.value)
 
-    // Modify query to only fetch favorites for the currently logged-in user
+    // Fetch favorites with book details including `pdf_url`
     const { data: favoriteData, error: fetchError } = await supabase
       .from('favorites')
-      .select('book_id')
-      .eq('user_id', userId.value) // Only fetch favorites for the current user
+      .select('book_id, books(id, title, author, cover_image, pdf_url)')
+      .eq('user_id', userId.value)
 
     if (fetchError) {
-      console.error(
-        'Error fetching favorites from Supabase:',
-        fetchError.message,
-        fetchError.details,
-      )
+      console.error('Error fetching favorites from Supabase:', fetchError.message)
       return
     }
 
     console.log('Favorite entries fetched from Supabase:', favoriteData)
 
-    // If there are favorites, fetch details from the books table
-    if (favoriteData && favoriteData.length > 0) {
-      favoriteBooks.value = [] // Clear current favorites
-
-      for (const favorite of favoriteData) {
-        const bookId = favorite.book_id
-        console.log('Fetching book details for Book ID:', bookId)
-
-        const { data: bookData, error: bookError } = await supabase
-          .from('books')
-          .select('*')
-          .eq('id', bookId)
-          .single()
-
-        if (bookError) {
-          console.error(
-            'Error fetching book details from Supabase:',
-            bookError.message,
-            bookError.details,
-          )
-          continue // Skip if there's an issue fetching this book
-        }
-
-        console.log('Book details fetched:', bookData)
-
-        if (bookData) {
-          favoriteBooks.value.push({
-            id: bookData.id,
-            title: bookData.title,
-            author: bookData.author,
-            coverImage: bookData.cover_image,
-          })
-        }
-      }
-    } else {
-      console.log('No favorite books found for user.')
-      favoriteBooks.value = []
-    }
+    // Map favorites data to the format expected by the UI
+    favoriteBooks.value = favoriteData.map(favorite => ({
+      id: favorite.books.id,
+      title: favorite.books.title,
+      author: favorite.books.author,
+      coverImage: favorite.books.cover_image,
+      booksUrl: favorite.books.pdf_url, // Include the `pdf_url`
+    }))
   } catch (err) {
     console.error('Unexpected error while fetching favorites:', err.message)
   }
 }
 
-// Function to add a book to Supabase favorites
-const addFavoriteToSupabase = async book => {
-  try {
-    if (!userId.value) {
-      console.error('User is not authenticated. User ID is missing.')
-      return
+//PDF
+const readBook = (booksUrl) => {
+  if (booksUrl) {
+    // Create a modal or overlay to display the loading spinner and iframe
+    const existingModal = document.getElementById('pdfModal');
+    if (existingModal) {
+      // If modal already exists, remove it to prevent duplicates
+      existingModal.remove();
     }
 
-    if (!book || !book.id) {
-      console.error('Invalid book data. Book object or book ID is missing.')
-      return
+    // Create a new modal for the PDF viewer
+    const modal = document.createElement('div');
+    modal.id = 'pdfModal';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    modal.style.zIndex = '1000';
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+
+    // Add loading indicator
+const loadingIndicator = document.createElement('div');
+loadingIndicator.id = 'loadingIndicator';
+loadingIndicator.style.display = 'flex';
+loadingIndicator.style.flexDirection = 'column'; // Stack elements vertically
+loadingIndicator.style.alignItems = 'center'; // Horizontally center the content
+loadingIndicator.style.justifyContent = 'center'; // Vertically center the content
+loadingIndicator.style.height = '100%'; // Take full height of the container
+loadingIndicator.style.color = '#fff';
+
+loadingIndicator.innerHTML = `
+  <p style="margin-bottom: 10px;">Loading preview, please wait...</p>
+  <div style="
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #9C27B0;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  "></div>
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
+  </style>
+`;
 
-    console.log('Attempting to add book to favorites:', book)
 
-    // Insert favorite into Supabase for the current user
-    const { data, error } = await supabase.from('favorites').insert([
-      {
-        user_id: userId.value,
-        book_id: book.id,
-      },
-    ])
+    // Add iframe for the PDF
+    const iframe = document.createElement('iframe');
+    iframe.id = 'pdfViewer';
+    iframe.src = booksUrl;
+    iframe.style.width = '80%';
+    iframe.style.height = '80%';
+    iframe.style.border = 'none';
+    iframe.style.display = 'none'; // Initially hide until loaded
 
-    if (error) {
-      console.error(
-        'Error inserting favorite to Supabase:',
-        error.message,
-        error.details,
-      )
-      return
-    }
+    // Handle iframe load event
+    iframe.onload = () => {
+      loadingIndicator.style.display = 'none'; // Hide loading indicator
+      iframe.style.display = 'block'; // Show iframe
+    };
 
-    console.log('Book successfully added to favorites in Supabase:', data)
+    const backButton = document.createElement('button');
+backButton.innerText = 'Close';
+backButton.style.margin = '10px'; // Uniform margin
+backButton.style.marginTop = '20px'; 
+backButton.style.marginBottom = '3px'; // Extra space below the button
+backButton.style.padding = '5px 20px'; // Padding inside the button
+backButton.style.backgroundColor = '#9C27B0';
+backButton.style.color = '#fff';
+backButton.style.border = 'none';
+backButton.style.borderRadius = '5px';
+backButton.style.cursor = 'pointer';
 
-    // Update local state to reflect added favorite
-    favoriteBooks.value.push(book)
-    console.log(
-      'Updated favoriteBooks list after addition:',
-      favoriteBooks.value,
-    )
-  } catch (err) {
-    console.error('Unexpected error while adding favorite:', err.message)
-  }
-}
 
-// Function to remove a book from Supabase favorites
-const removeFavoriteFromSupabase = async id => {
-  try {
-    if (!userId.value) {
-      throw new Error('User is not authenticated')
-    }
+    backButton.onclick = () => {
+      modal.remove(); // Remove modal when back button is clicked
+    };
 
-    console.log('Attempting to remove book from favorites with ID:', id)
+    // Append elements to modal
+    modal.appendChild(backButton);
+    modal.appendChild(loadingIndicator);
+    modal.appendChild(iframe);
 
-    const { error } = await supabase
-      .from('favorites')
-      .delete()
-      .eq('user_id', userId.value) // Ensure we only delete the favorite for the current user
-      .eq('book_id', id)
-
-    if (error) {
-      console.error(
-        'Error deleting from Supabase:',
-        error.message,
-        error.details,
-      )
-      return
-    }
-
-    console.log('Book successfully removed from favorites with ID:', id)
-
-    // Update local state to reflect removed favorite
-    favoriteBooks.value = favoriteBooks.value.filter(book => book.id !== id)
-    console.log(
-      'Updated favoriteBooks list after removal:',
-      favoriteBooks.value,
-    )
-  } catch (err) {
-    console.error('Error removing favorite:', err.message)
-  }
-}
-
-// Function to handle adding/removing favorites
-const toggleFavorite = book => {
-  const index = favoriteBooks.value.findIndex(favBook => favBook.id === book.id)
-  if (index === -1) {
-    console.log('Book not found in favorites, adding:', book)
-    addFavoriteToSupabase(book)
+    // Append modal to body
+    document.body.appendChild(modal);
   } else {
-    console.log('Book found in favorites, removing:', book.id)
-    removeFavoriteFromSupabase(book.id)
+    alert('No PDF available for this book.');
+  }
+};
+
+// Function to toggle a book as favorite (add/remove)
+const toggleFavorite = async (book) => {
+  try {
+    const isFav = isFavorite(book)
+    if (isFav) {
+      // Remove from favorites
+      await supabase
+        .from('favorites')
+        .delete()
+        .eq('user_id', userId.value)
+        .eq('book_id', book.id)
+
+      // Update UI
+      favoriteBooks.value = favoriteBooks.value.filter(favBook => favBook.id !== book.id)
+      console.log('Book removed from favorites:', book)
+    } else {
+      // Add to favorites
+      await supabase.from('favorites').insert([
+        {
+          user_id: userId.value,
+          book_id: book.id,
+        },
+      ])
+      // Refresh the list
+      await fetchFavoritesFromSupabase()
+      console.log('Book added to favorites:', book)
+    }
+  } catch (error) {
+    console.error('Error toggling favorite status:', error.message)
   }
 }
 
 // Function to check if a book is a favorite
-const isFavorite = book => {
+const isFavorite = (book) => {
   return favoriteBooks.value.some(favBook => favBook.id === book.id)
 }
 
-// Function to handle reading a book
-const readBook = id => {
-  console.log(`Read book with id: ${id}`)
-}
-
-// On component mounted, check if user is logged in and load their favorites
+// On Component Mount
 onMounted(async () => {
   try {
     const { data, error } = await supabase.auth.getSession()
 
-    if (error) {
-      console.error('Error fetching user session:', error.message)
-      router.push('/login') // Redirect to login page if user session could not be retrieved
+    if (error || !data?.session?.user) {
+      router.push('/login') // Redirect if not logged in
       return
     }
 
-    if (data?.session?.user) {
-      const user = data.session.user
-      userEmail.value = user.email
-      userId.value = user.id
-
-      console.log('User email found:', user.email)
-      console.log('User ID fetched successfully:', user.id)
-
-      // Fetch the user's favorite books
-      await fetchFavoritesFromSupabase()
-    } else {
-      console.error('No user found, unable to load favorites.')
-      router.push('/login') // Redirect to login page if the user is not authenticated
-    }
+    userEmail.value = data.session.user.email
+    userId.value = data.session.user.id
+    await fetchFavoritesFromSupabase()
   } catch (err) {
-    console.error('Unexpected error while loading favorites:', err.message)
-    router.push('/login') // Redirect to login page if an unexpected error occurs
+    console.error('Error loading favorites:', err.message)
+    router.push('/login')
   }
 })
 </script>
 
 <template>
-  <AppLayout
-    :is-with-app-bar-nav-icon="true"
-    @is-drawer-visible="isDrawerVisible = !isDrawerVisible"
-  >
+  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
     <template #navigation>
-      <SideNavigation :is-drawer-visible="isDrawerVisible"></SideNavigation>
+      <SideNavigation :is-drawer-visible="isDrawerVisible" />
     </template>
 
     <template #content>
       <v-container>
         <h1 class="text-right my-4">
-          <!-- <span class="gradient-text">MY FAVORITES</span> -->
           <v-btn icon color="black" dark class="fav-icon mx-6">
             <v-icon color="purple">mdi-heart</v-icon>
           </v-btn>
         </h1>
 
         <v-row dense>
-          <v-col
-            v-for="book in favoriteBooks"
-            :key="book.id"
-            cols="12"
-            sm="6"
-            md="4"
-          >
+          <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" sm="6" md="4">
             <v-card>
-              <v-img
-                :src="book.coverImage"
-                height="200px"
-                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              ></v-img>
+              <v-img :src="book.coverImage" height="200px" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" />
               <v-card-title>{{ book.title }}</v-card-title>
               <v-card-subtitle>{{ book.author }}</v-card-subtitle>
               <v-card-actions class="d-flex justify-center">
-                <v-btn
-                  color="purple"
-                  dark
-                  class="bordered mx-2 mt-5"
-                  @click="readBook(book.id)"
-                  >Read</v-btn
-                >
+                <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(book.booksUrl)">Read</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn
-                  icon
-                  color="purple"
-                  dark
-                  class="glow mx-2 mt-5"
-                  @click="toggleFavorite(book)"
-                >
-                  <v-icon :color="isFavorite(book) ? 'purple' : ''"
-                    >mdi-heart</v-icon
-                  >
+                <v-btn icon color="purple" dark class="glow mx-2 mt-5" @click="toggleFavorite(book)">
+                  <v-icon :color="isFavorite(book) ? 'purple' : ''">mdi-heart</v-icon>
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
-        <p v-if="favoriteBooks.length === 0" class="text">
-          No favorite books added yet.
-        </p>
+
+        <p v-if="favoriteBooks.length === 0" class="text">No favorite books added yet.</p>
       </v-container>
     </template>
   </AppLayout>
 </template>
+
+
 
 <style scoped>
 @keyframes pop {
