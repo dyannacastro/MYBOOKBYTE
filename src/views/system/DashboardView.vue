@@ -240,64 +240,99 @@ const fetchItems = async genre => {
   }
 };
 
-
-// Open book URL with a back button and loading indicator for returning
+//PDF
 const readBook = (booksUrl) => {
   if (booksUrl) {
-    // Keep the current dashboard URL intact for navigation
-    const dashboardUrl = window.location.href;
+    // Create a modal or overlay to display the loading spinner and iframe
+    const existingModal = document.getElementById('pdfModal');
+    if (existingModal) {
+      // If modal already exists, remove it to prevent duplicates
+      existingModal.remove();
+    }
 
-    // Replace the body content for loading spinner and PDF display
-    document.body.innerHTML = `
-      <button onclick="window.location.href='${dashboardUrl}'" style="
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        padding: 10px 15px;
-        background-color: #9C27B0;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        z-index: 1000;
-      ">Back to Dashboard</button>
+    // Create a new modal for the PDF viewer
+    const modal = document.createElement('div');
+    modal.id = 'pdfModal';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    modal.style.zIndex = '1000';
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
 
-      <div id="loadingIndicator" style="
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: #6200ea;
-      ">
-        <p>Loading preview, please wait...</p>
-        <div style="
-          border: 5px solid #f3f3f3;
-          border-top: 5px solid #9C27B0;
-          border-radius: 50%;
-          width: 50px;
-          height: 50px;
-          animation: spin 1s linear infinite;
-          margin-top: 10px;
-        "></div>
-      </div>
+    // Add loading indicator
+const loadingIndicator = document.createElement('div');
+loadingIndicator.id = 'loadingIndicator';
+loadingIndicator.style.display = 'flex';
+loadingIndicator.style.flexDirection = 'column'; // Stack elements vertically
+loadingIndicator.style.alignItems = 'center'; // Horizontally center the content
+loadingIndicator.style.justifyContent = 'center'; // Vertically center the content
+loadingIndicator.style.height = '100%'; // Take full height of the container
+loadingIndicator.style.color = '#fff';
 
-      <iframe id="pdfViewer" src="${booksUrl}" style="position: absolute; top: 60px; left: 0; width: 100%; height: calc(100% - 60px); border: none; display: none;"></iframe>
+loadingIndicator.innerHTML = `
+  <p style="margin-bottom: 10px;">Loading preview, please wait...</p>
+  <div style="
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #9C27B0;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  "></div>
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+`;
 
-      <style>
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      </style>
-    `;
 
-    // Show the PDF after it's fully loaded
-    const iframe = document.getElementById('pdfViewer');
+    // Add iframe for the PDF
+    const iframe = document.createElement('iframe');
+    iframe.id = 'pdfViewer';
+    iframe.src = booksUrl;
+    iframe.style.width = '80%';
+    iframe.style.height = '80%';
+    iframe.style.border = 'none';
+    iframe.style.display = 'none'; // Initially hide until loaded
+
+    // Handle iframe load event
     iframe.onload = () => {
-      document.getElementById('loadingIndicator').style.display = 'none'; // Hide spinner
-      iframe.style.display = 'block'; // Show PDF
+      loadingIndicator.style.display = 'none'; // Hide loading indicator
+      iframe.style.display = 'block'; // Show iframe
     };
+
+    const backButton = document.createElement('button');
+backButton.innerText = 'Close';
+backButton.style.margin = '10px'; // Uniform margin
+backButton.style.marginTop = '20px'; 
+backButton.style.marginBottom = '3px'; // Extra space below the button
+backButton.style.padding = '5px 20px'; // Padding inside the button
+backButton.style.backgroundColor = '#9C27B0';
+backButton.style.color = '#fff';
+backButton.style.border = 'none';
+backButton.style.borderRadius = '5px';
+backButton.style.cursor = 'pointer';
+
+
+    backButton.onclick = () => {
+      modal.remove(); // Remove modal when back button is clicked
+    };
+
+    // Append elements to modal
+    modal.appendChild(backButton);
+    modal.appendChild(loadingIndicator);
+    modal.appendChild(iframe);
+
+    // Append modal to body
+    document.body.appendChild(modal);
   } else {
     alert('No PDF available for this book.');
   }
