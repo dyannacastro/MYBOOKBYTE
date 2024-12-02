@@ -28,7 +28,10 @@ const fetchFavoritesFromSupabase = async () => {
       .eq('user_id', userId.value)
 
     if (fetchError) {
-      console.error('Error fetching favorites from Supabase:', fetchError.message)
+      console.error(
+        'Error fetching favorites from Supabase:',
+        fetchError.message,
+      )
       return
     }
 
@@ -48,41 +51,41 @@ const fetchFavoritesFromSupabase = async () => {
 }
 
 //PDF
-const readBook = (booksUrl) => {
+const readBook = booksUrl => {
   if (booksUrl) {
     // Create a modal or overlay to display the loading spinner and iframe
-    const existingModal = document.getElementById('pdfModal');
+    const existingModal = document.getElementById('pdfModal')
     if (existingModal) {
       // If modal already exists, remove it to prevent duplicates
-      existingModal.remove();
+      existingModal.remove()
     }
 
     // Create a new modal for the PDF viewer
-    const modal = document.createElement('div');
-    modal.id = 'pdfModal';
-    modal.style.position = 'fixed';
-    modal.style.top = '0';
-    modal.style.left = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    modal.style.zIndex = '1000';
-    modal.style.display = 'flex';
-    modal.style.flexDirection = 'column';
-    modal.style.alignItems = 'center';
-    modal.style.justifyContent = 'center';
+    const modal = document.createElement('div')
+    modal.id = 'pdfModal'
+    modal.style.position = 'fixed'
+    modal.style.top = '0'
+    modal.style.left = '0'
+    modal.style.width = '100%'
+    modal.style.height = '100%'
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
+    modal.style.zIndex = '1000'
+    modal.style.display = 'flex'
+    modal.style.flexDirection = 'column'
+    modal.style.alignItems = 'center'
+    modal.style.justifyContent = 'center'
 
     // Add loading indicator
-const loadingIndicator = document.createElement('div');
-loadingIndicator.id = 'loadingIndicator';
-loadingIndicator.style.display = 'flex';
-loadingIndicator.style.flexDirection = 'column'; // Stack elements vertically
-loadingIndicator.style.alignItems = 'center'; // Horizontally center the content
-loadingIndicator.style.justifyContent = 'center'; // Vertically center the content
-loadingIndicator.style.height = '100%'; // Take full height of the container
-loadingIndicator.style.color = '#fff';
+    const loadingIndicator = document.createElement('div')
+    loadingIndicator.id = 'loadingIndicator'
+    loadingIndicator.style.display = 'flex'
+    loadingIndicator.style.flexDirection = 'column' // Stack elements vertically
+    loadingIndicator.style.alignItems = 'center' // Horizontally center the content
+    loadingIndicator.style.justifyContent = 'center' // Vertically center the content
+    loadingIndicator.style.height = '100%' // Take full height of the container
+    loadingIndicator.style.color = '#fff'
 
-loadingIndicator.innerHTML = `
+    loadingIndicator.innerHTML = `
   <p style="margin-bottom: 10px;">Loading preview, please wait...</p>
   <div style="
     border: 5px solid #f3f3f3;
@@ -98,55 +101,73 @@ loadingIndicator.innerHTML = `
       100% { transform: rotate(360deg); }
     }
   </style>
-`;
-
+`
 
     // Add iframe for the PDF
-    const iframe = document.createElement('iframe');
-    iframe.id = 'pdfViewer';
-    iframe.src = booksUrl;
-    iframe.style.width = '80%';
-    iframe.style.height = '80%';
-    iframe.style.border = 'none';
-    iframe.style.display = 'none'; // Initially hide until loaded
+    const iframe = document.createElement('iframe')
+    iframe.id = 'pdfViewer'
+    iframe.src = booksUrl
+    iframe.style.width = '80%'
+    iframe.style.height = '80%'
+    iframe.style.border = 'none'
+    iframe.style.display = 'none' // Initially hide until loaded
 
     // Handle iframe load event
     iframe.onload = () => {
-      loadingIndicator.style.display = 'none'; // Hide loading indicator
-      iframe.style.display = 'block'; // Show iframe
-    };
+      loadingIndicator.style.display = 'none' // Hide loading indicator
+      iframe.style.display = 'block' // Show iframe
+    }
 
-    const backButton = document.createElement('button');
-backButton.innerText = 'Close';
-backButton.style.margin = '10px'; // Uniform margin
-backButton.style.marginTop = '20px'; 
-backButton.style.marginBottom = '3px'; // Extra space below the button
-backButton.style.padding = '5px 20px'; // Padding inside the button
-backButton.style.backgroundColor = '#9C27B0';
-backButton.style.color = '#fff';
-backButton.style.border = 'none';
-backButton.style.borderRadius = '5px';
-backButton.style.cursor = 'pointer';
+    // Create the button
+    const backButton = document.createElement('button')
+    backButton.innerText = 'Close'
+    backButton.style.margin = '10px' // Uniform margin
+    backButton.style.marginTop = '50px'
+    backButton.style.marginBottom = '10px' // Extra space below the button
+    backButton.style.padding = '5px 20px' // Padding inside the button
+    backButton.style.backgroundColor = '#9C27B0'
+    backButton.style.color = '#fff'
+    backButton.style.border = 'none'
+    backButton.style.borderRadius = '5px'
+    backButton.style.cursor = 'pointer'
+    backButton.style.display = 'none' // Initially hidden
+    document.body.appendChild(backButton)
 
+    // Function to handle loading state
+    function setLoading(isLoading) {
+      if (isLoading) {
+        backButton.style.display = 'none' // Hide button during loading
+      } else {
+        backButton.style.display = 'block' // Show button after loading
+      }
+    }
+
+    // Example usage
+    setLoading(true) // Simulate loading state
+
+    // Simulate loading complete after 3 seconds
+    setTimeout(() => {
+      setLoading(false) // End loading state and show button
+    }, 3000)
 
     backButton.onclick = () => {
-      modal.remove(); // Remove modal when back button is clicked
-    };
+      modal.remove() // Remove modal when back button is clicked
+    }
 
     // Append elements to modal
-    modal.appendChild(backButton);
-    modal.appendChild(loadingIndicator);
-    modal.appendChild(iframe);
+    modal.appendChild(backButton)
+    modal.appendChild(loadingIndicator)
+    modal.appendChild(iframe)
 
     // Append modal to body
-    document.body.appendChild(modal);
+    document.body.appendChild(modal)
   } else {
-    alert('No PDF available for this book.');
+    alert('No PDF available for this book.')
   }
-};
+}
 
 // Function to toggle a book as favorite (add/remove)
-const toggleFavorite = async (book) => {
+const toggleFavorite = async book => {
   try {
     const isFav = isFavorite(book)
     if (isFav) {
@@ -158,7 +179,9 @@ const toggleFavorite = async (book) => {
         .eq('book_id', book.id)
 
       // Update UI
-      favoriteBooks.value = favoriteBooks.value.filter(favBook => favBook.id !== book.id)
+      favoriteBooks.value = favoriteBooks.value.filter(
+        favBook => favBook.id !== book.id,
+      )
       console.log('Book removed from favorites:', book)
     } else {
       // Add to favorites
@@ -178,7 +201,7 @@ const toggleFavorite = async (book) => {
 }
 
 // Function to check if a book is a favorite
-const isFavorite = (book) => {
+const isFavorite = book => {
   return favoriteBooks.value.some(favBook => favBook.id === book.id)
 }
 
@@ -203,7 +226,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
+  <AppLayout
+    :is-with-app-bar-nav-icon="true"
+    @is-drawer-visible="isDrawerVisible = !isDrawerVisible"
+  >
     <template #navigation>
       <SideNavigation :is-drawer-visible="isDrawerVisible" />
     </template>
@@ -217,29 +243,53 @@ onMounted(async () => {
         </h1>
 
         <v-row dense>
-          <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" sm="6" md="4">
+          <v-col
+            v-for="book in favoriteBooks"
+            :key="book.id"
+            cols="12"
+            sm="6"
+            md="4"
+          >
             <v-card>
-              <v-img :src="book.coverImage" height="200px" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" />
+              <v-img
+                :src="book.coverImage"
+                height="200px"
+                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+              />
               <v-card-title>{{ book.title }}</v-card-title>
               <v-card-subtitle>{{ book.author }}</v-card-subtitle>
               <v-card-actions class="d-flex justify-center">
-                <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(book.booksUrl)">Read</v-btn>
+                <v-btn
+                  color="purple"
+                  dark
+                  class="bordered mx-2 mt-5"
+                  @click="readBook(book.booksUrl)"
+                  >Read</v-btn
+                >
                 <v-spacer></v-spacer>
-                <v-btn icon color="purple" dark class="glow mx-2 mt-5" @click="toggleFavorite(book)">
-                  <v-icon :color="isFavorite(book) ? 'purple' : ''">mdi-heart</v-icon>
+                <v-btn
+                  icon
+                  color="purple"
+                  dark
+                  class="glow mx-2 mt-5"
+                  @click="toggleFavorite(book)"
+                >
+                  <v-icon :color="isFavorite(book) ? 'purple' : ''"
+                    >mdi-heart</v-icon
+                  >
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
 
-        <p v-if="favoriteBooks.length === 0" class="text">No favorite books added yet.</p>
+        <p v-if="favoriteBooks.length === 0" class="text">
+          No favorite books added yet.
+        </p>
       </v-container>
     </template>
   </AppLayout>
 </template>
-
-
 
 <style scoped>
 @keyframes pop {
@@ -317,7 +367,7 @@ onMounted(async () => {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.v-card-subtitle{
+.v-card-subtitle {
   text-align: center;
 }
 /* .gradient-text {

@@ -168,7 +168,6 @@ const removeFavoriteFromSupabase = async (bookId, userId) => {
   }
 }
 
-
 // Function to handle typing effect in the UI
 const fullText = 'What book do you want to search today?'
 const displayedText = ref('')
@@ -182,15 +181,15 @@ const typeText = async () => {
 
 // Function to fetch books from the API and insert them into the Supabase books table
 const fetchItems = async genre => {
-  loading.value = true;
-  error.value = null;
+  loading.value = true
+  error.value = null
   try {
-    console.log(`Fetching books for genre: ${genre}`);
+    console.log(`Fetching books for genre: ${genre}`)
 
     const response = await axios.get(
-      `https://openlibrary.org/subjects/${genre}.json`
-    );
-    console.log('Fetched books data:', response.data);
+      `https://openlibrary.org/subjects/${genre}.json`,
+    )
+    console.log('Fetched books data:', response.data)
 
     cards.value = response.data.works.map((book, index) => ({
       id: book.key || `temp-id-${index}`, // Ensure unique ID
@@ -203,7 +202,7 @@ const fetchItems = async genre => {
       booksUrl: book.key
         ? `https://openlibrary.org${book.key}.pdf` // Assign book-specific PDF URL
         : null, // No URL for this book
-    }));
+    }))
 
     // Transform the books data to match the Supabase table structure
     const transformedBooks = response.data.works.map(book => ({
@@ -213,69 +212,69 @@ const fetchItems = async genre => {
         : null,
       author: book.authors?.[0]?.name || 'Unknown Author',
       genre: genre,
-    }));
+    }))
 
-    console.log('Transformed books data for Supabase:', transformedBooks);
+    console.log('Transformed books data for Supabase:', transformedBooks)
 
     // Insert the transformed books into the Supabase books table
-    console.log('Attempting to save books to Supabase...');
+    console.log('Attempting to save books to Supabase...')
     const { data, error: supabaseError } = await supabase
       .from('books')
-      .upsert(transformedBooks, { onConflict: ['title', 'author'] });
+      .upsert(transformedBooks, { onConflict: ['title', 'author'] })
 
     if (supabaseError) {
       console.error(
         'Error inserting books into Supabase:',
-        supabaseError.message
-      );
+        supabaseError.message,
+      )
     } else {
-      console.log('Books successfully saved in Supabase:', data);
+      console.log('Books successfully saved in Supabase:', data)
     }
   } catch (error) {
-    error.value = 'Failed to load items. Please try again later.';
-    console.error('Error fetching books:', error);
+    error.value = 'Failed to load items. Please try again later.'
+    console.error('Error fetching books:', error)
   } finally {
-    loading.value = false;
-    console.log('Finished fetching books, loading:', loading.value);
+    loading.value = false
+    console.log('Finished fetching books, loading:', loading.value)
   }
-};
+}
 
 //PDF
-const readBook = (booksUrl) => {
+const readBook = booksUrl => {
   if (booksUrl) {
     // Create a modal or overlay to display the loading spinner and iframe
-    const existingModal = document.getElementById('pdfModal');
+    const existingModal = document.getElementById('pdfModal')
     if (existingModal) {
       // If modal already exists, remove it to prevent duplicates
-      existingModal.remove();
+      existingModal.remove()
     }
 
     // Create a new modal for the PDF viewer
-    const modal = document.createElement('div');
-    modal.id = 'pdfModal';
-    modal.style.position = 'fixed';
-    modal.style.top = '0';
-    modal.style.left = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    modal.style.zIndex = '1000';
-    modal.style.display = 'flex';
-    modal.style.flexDirection = 'column';
-    modal.style.alignItems = 'center';
-    modal.style.justifyContent = 'center';
+    const modal = document.createElement('div')
+    modal.id = 'pdfModal'
+    modal.style.position = 'fixed'
+    modal.style.top = '0'
+    modal.style.left = '0'
+    modal.style.width = '100%'
+    modal.style.height = '100%'
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
+    modal.style.zIndex = '1000'
+    modal.style.display = 'flex'
+    modal.style.flexDirection = 'column'
+    modal.style.alignItems = 'center'
+    modal.style.justifyContent = 'center'
 
     // Add loading indicator
-const loadingIndicator = document.createElement('div');
-loadingIndicator.id = 'loadingIndicator';
-loadingIndicator.style.display = 'flex';
-loadingIndicator.style.flexDirection = 'column'; // Stack elements vertically
-loadingIndicator.style.alignItems = 'center'; // Horizontally center the content
-loadingIndicator.style.justifyContent = 'center'; // Vertically center the content
-loadingIndicator.style.height = '100%'; // Take full height of the container
-loadingIndicator.style.color = '#fff';
+    const loadingIndicator = document.createElement('div')
+    loadingIndicator.id = 'loadingIndicator'
+    loadingIndicator.style.display = 'flex'
+    loadingIndicator.style.flexDirection = 'column' // Stack elements vertically
+    loadingIndicator.style.alignItems = 'center' // Horizontally center the content
+    loadingIndicator.style.justifyContent = 'center' // Vertically center the content
+    loadingIndicator.style.height = '100%' // Take full height of the container
+    loadingIndicator.style.color = '#fff'
 
-loadingIndicator.innerHTML = `
+    loadingIndicator.innerHTML = `
   <p style="margin-bottom: 10px;">Loading preview, please wait...</p>
   <div style="
     border: 5px solid #f3f3f3;
@@ -291,52 +290,70 @@ loadingIndicator.innerHTML = `
       100% { transform: rotate(360deg); }
     }
   </style>
-`;
-
+`
 
     // Add iframe for the PDF
-    const iframe = document.createElement('iframe');
-    iframe.id = 'pdfViewer';
-    iframe.src = booksUrl;
-    iframe.style.width = '80%';
-    iframe.style.height = '80%';
-    iframe.style.border = 'none';
-    iframe.style.display = 'none'; // Initially hide until loaded
+    const iframe = document.createElement('iframe')
+    iframe.id = 'pdfViewer'
+    iframe.src = booksUrl
+    iframe.style.width = '80%'
+    iframe.style.height = '80%'
+    iframe.style.border = 'none'
+    iframe.style.display = 'none' // Initially hide until loaded
 
     // Handle iframe load event
     iframe.onload = () => {
-      loadingIndicator.style.display = 'none'; // Hide loading indicator
-      iframe.style.display = 'block'; // Show iframe
-    };
+      loadingIndicator.style.display = 'none' // Hide loading indicator
+      iframe.style.display = 'block' // Show iframe
+    }
 
-    const backButton = document.createElement('button');
-backButton.innerText = 'Close';
-backButton.style.margin = '10px'; // Uniform margin
-backButton.style.marginTop = '20px'; 
-backButton.style.marginBottom = '3px'; // Extra space below the button
-backButton.style.padding = '5px 20px'; // Padding inside the button
-backButton.style.backgroundColor = '#9C27B0';
-backButton.style.color = '#fff';
-backButton.style.border = 'none';
-backButton.style.borderRadius = '5px';
-backButton.style.cursor = 'pointer';
+    // Create the button
+    const backButton = document.createElement('button')
+    backButton.innerText = 'Close'
+    backButton.style.margin = '10px' // Uniform margin
+    backButton.style.marginTop = '50px'
+    backButton.style.marginBottom = '10px' // Extra space below the button
+    backButton.style.padding = '5px 20px' // Padding inside the button
+    backButton.style.backgroundColor = '#9C27B0'
+    backButton.style.color = '#fff'
+    backButton.style.border = 'none'
+    backButton.style.borderRadius = '5px'
+    backButton.style.cursor = 'pointer'
+    backButton.style.display = 'none' // Initially hidden
+    document.body.appendChild(backButton)
 
+    // Function to handle loading state
+    function setLoading(isLoading) {
+      if (isLoading) {
+        backButton.style.display = 'none' // Hide button during loading
+      } else {
+        backButton.style.display = 'block' // Show button after loading
+      }
+    }
+
+    // Example usage
+    setLoading(true) // Simulate loading state
+
+    // Simulate loading complete after 3 seconds
+    setTimeout(() => {
+      setLoading(false) // End loading state and show button
+    }, 3000)
 
     backButton.onclick = () => {
-      modal.remove(); // Remove modal when back button is clicked
-    };
+      modal.remove() // Remove modal when back button is clicked
+    }
 
     // Append elements to modal
-    modal.appendChild(backButton);
-    modal.appendChild(loadingIndicator);
-    modal.appendChild(iframe);
+    modal.appendChild(backButton)
+    modal.appendChild(loadingIndicator)
+    modal.appendChild(iframe)
 
     // Append modal to body
-    document.body.appendChild(modal);
+    document.body.appendChild(modal)
   } else {
-    alert('No PDF available for this book.');
+    alert('No PDF available for this book.')
   }
-};
+}
 
 // Watch the `tabs` variable for changes and fetch new items when the genre changes
 watch(tabs, newGenre => {
@@ -399,16 +416,29 @@ export default {
 </script>
 
 <template>
-  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
+  <AppLayout
+    :is-with-app-bar-nav-icon="true"
+    @is-drawer-visible="isDrawerVisible = !isDrawerVisible"
+  >
     <template #content>
       <v-container class="dashboard">
         <h3 class="gradient-text"></h3>
 
         <!-- Carousel Section -->
-        <v-carousel cycle height="400" hide-arrows hide-delimiters :interval="4000">
+        <v-carousel
+          cycle
+          height="400"
+          hide-arrows
+          hide-delimiters
+          :interval="4000"
+        >
           <v-carousel-item v-for="(slide, i) in slides" :key="i">
             <v-img :src="slide.image" height="100%">
-              <v-row class="fill-height" align="center" justify="center"></v-row>
+              <v-row
+                class="fill-height"
+                align="center"
+                justify="center"
+              ></v-row>
             </v-img>
           </v-carousel-item>
         </v-carousel>
@@ -417,9 +447,16 @@ export default {
         <v-row justify="center">
           <v-col cols="12" sm="8" md="6" class="search">
             <h2 class="text my-4 text-center">{{ displayedText }}</h2>
-            <v-text-field v-model="searchQuery" label="Search by title" prepend-inner-icon="mdi-magnify" clearable
-              @click:clear="clearSearch" class="mx-auto rounded-pill-search" :loading="loading"
-              color="#E1BEE7"></v-text-field>
+            <v-text-field
+              v-model="searchQuery"
+              label="Search by title"
+              prepend-inner-icon="mdi-magnify"
+              clearable
+              @click:clear="clearSearch"
+              class="mx-auto rounded-pill-search"
+              :loading="loading"
+              color="#E1BEE7"
+            ></v-text-field>
           </v-col>
         </v-row>
 
@@ -427,8 +464,14 @@ export default {
         <h3 class="gradient-text my-4">BOOK GENRES</h3>
         <v-row class="genre-icons my-4" justify="center">
           <v-col v-for="genre in genres" :key="genre" cols="6" md="3" lg="2">
-            <v-btn class="genre-icon gradient-button" :class="{ active: tabs === genre }" @click="tabs = genre"
-              elevation="2" block rounded>
+            <v-btn
+              class="genre-icon gradient-button"
+              :class="{ active: tabs === genre }"
+              @click="tabs = genre"
+              elevation="2"
+              block
+              rounded
+            >
               {{ genre.charAt(0).toUpperCase() + genre.slice(1) }}
             </v-btn>
           </v-col>
@@ -440,22 +483,51 @@ export default {
         <h3 class="gradient-text my-4">SEARCH RESULTS</h3>
         <v-row dense>
           <v-col v-if="loading" cols="12" class="text-center">
-            <v-progress-circular indeterminate color="purple" class="ma-3"></v-progress-circular>
+            <v-progress-circular
+              indeterminate
+              color="purple"
+              class="ma-3"
+            ></v-progress-circular>
             <p class="loading-text">Loading books...</p>
           </v-col>
-          <v-col v-else v-for="card in filteredCards" :key="card.id" :cols="12" sm="6" md="4" lg="3">
+          <v-col
+            v-else
+            v-for="card in filteredCards"
+            :key="card.id"
+            :cols="12"
+            sm="6"
+            md="4"
+            lg="3"
+          >
             <v-card class="heart mt-15">
-              <v-img :src="card.src" class="white--text align-end" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                height="200px"></v-img>
+              <v-img
+                :src="card.src"
+                class="white--text align-end"
+                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                height="200px"
+              ></v-img>
               <v-card-title>{{ card.title }}</v-card-title>
               <v-card-actions>
                 <!-- Pass the correct booksUrl to readBook -->
-                <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(card.booksUrl)">
+                <v-btn
+                  color="purple"
+                  dark
+                  class="bordered mx-2 mt-5"
+                  @click="readBook(card.booksUrl)"
+                >
                   Read
                 </v-btn>
                 <v-spacer></v-spacer>
-                <v-btn color="white" dark class="glow mx-2 mt-5" icon @click="toggleFavorite(card)">
-                  <v-icon :color="isFavorite(card.id) ? 'purple' : ''">mdi-heart</v-icon>
+                <v-btn
+                  color="white"
+                  dark
+                  class="glow mx-2 mt-5"
+                  icon
+                  @click="toggleFavorite(card)"
+                >
+                  <v-icon :color="isFavorite(card.id) ? 'purple' : ''"
+                    >mdi-heart</v-icon
+                  >
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -591,12 +663,14 @@ export default {
 }
 
 .genre-icon.active {
-  background: linear-gradient(45deg,
-      #b909fe,
-      #64c0ce,
-      #64c0ce,
-      #64c0ce,
-      #b909fe);
+  background: linear-gradient(
+    45deg,
+    #b909fe,
+    #64c0ce,
+    #64c0ce,
+    #64c0ce,
+    #b909fe
+  );
 }
 
 .genre-icon:not(.active) {
