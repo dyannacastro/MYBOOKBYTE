@@ -118,36 +118,17 @@ const readBook = booksUrl => {
       iframe.style.display = 'block' // Show iframe
     }
 
-    // Create the button
     const backButton = document.createElement('button')
     backButton.innerText = 'Close'
     backButton.style.margin = '10px' // Uniform margin
-    backButton.style.marginTop = '50px'
-    backButton.style.marginBottom = '10px' // Extra space below the button
+    backButton.style.marginTop = '31.8px'
+    backButton.style.marginBottom = '3px' // Extra space below the button
     backButton.style.padding = '5px 20px' // Padding inside the button
     backButton.style.backgroundColor = '#9C27B0'
     backButton.style.color = '#fff'
     backButton.style.border = 'none'
     backButton.style.borderRadius = '5px'
     backButton.style.cursor = 'pointer'
-    backButton.style.display = 'none' // Initially hidden
-    document.body.appendChild(backButton)
-
-    // Function to handle loading state
-    function setLoading(isLoading) {
-      if (isLoading) {
-        backButton.style.display = 'none' // Hide button during loading
-      } else {
-        backButton.style.display = 'block' // Show button after loading
-      }
-    }
-
-    // Example usage
-    setLoading(true) // Simulate loading state
-
-    setTimeout(() => {
-      setLoading(false) // End loading state and show button
-    }, 5000)
 
     backButton.onclick = () => {
       modal.remove() // Remove modal when back button is clicked
