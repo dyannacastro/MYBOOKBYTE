@@ -145,10 +145,9 @@ const readBook = booksUrl => {
     // Example usage
     setLoading(true) // Simulate loading state
 
-    // Simulate loading complete after 3 seconds
     setTimeout(() => {
       setLoading(false) // End loading state and show button
-    }, 3000)
+    }, 5000)
 
     backButton.onclick = () => {
       modal.remove() // Remove modal when back button is clicked
