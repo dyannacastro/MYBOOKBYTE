@@ -5,7 +5,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { supabase } from '@/utils/supabase'
 
 const router = useRouter()
-const isLoading = ref(true);  
+const isLoading = ref(true);
 
 
 const user = ref({
@@ -21,10 +21,8 @@ const favoriteBooks = ref([])
 
 const readBook = booksUrl => {
   if (booksUrl) {
-    // Create a modal or overlay to display the loading spinner and iframe
     const existingModal = document.getElementById('pdfModal')
     if (existingModal) {
-      // If modal already exists, remove it to prevent duplicates
       existingModal.remove()
     }
 
@@ -47,10 +45,10 @@ const readBook = booksUrl => {
     const loadingIndicator = document.createElement('div')
     loadingIndicator.id = 'loadingIndicator'
     loadingIndicator.style.display = 'flex'
-    loadingIndicator.style.flexDirection = 'column' // Stack elements vertically
-    loadingIndicator.style.alignItems = 'center' // Horizontally center the content
-    loadingIndicator.style.justifyContent = 'center' // Vertically center the content
-    loadingIndicator.style.height = '100%' // Take full height of the container
+    loadingIndicator.style.flexDirection = 'column'
+    loadingIndicator.style.alignItems = 'center'
+    loadingIndicator.style.justifyContent = 'center'
+    loadingIndicator.style.height = '100%'
     loadingIndicator.style.color = '#fff'
 
     loadingIndicator.innerHTML = `
@@ -78,20 +76,20 @@ const readBook = booksUrl => {
     iframe.style.width = '80%'
     iframe.style.height = '80%'
     iframe.style.border = 'none'
-    iframe.style.display = 'none' // Initially hide until loaded
+    iframe.style.display = 'none'
 
     // Handle iframe load event
     iframe.onload = () => {
-      loadingIndicator.style.display = 'none' // Hide loading indicator
-      iframe.style.display = 'block' // Show iframe
+      loadingIndicator.style.display = 'none'
+      iframe.style.display = 'block'
     }
 
     const backButton = document.createElement('button')
     backButton.innerText = 'Close'
-    backButton.style.margin = '10px' // Uniform margin
+    backButton.style.margin = '10px'
     backButton.style.marginTop = '31.8px'
-    backButton.style.marginBottom = '3px' // Extra space below the button
-    backButton.style.padding = '5px 20px' // Padding inside the button
+    backButton.style.marginBottom = '3px'
+    backButton.style.padding = '5px 20px'
     backButton.style.backgroundColor = '#9C27B0'
     backButton.style.color = '#fff'
     backButton.style.border = 'none'
@@ -99,15 +97,13 @@ const readBook = booksUrl => {
     backButton.style.cursor = 'pointer'
 
     backButton.onclick = () => {
-      modal.remove() // Remove modal when back button is clicked
+      modal.remove()
     }
 
-    // Append elements to modal
     modal.appendChild(backButton)
     modal.appendChild(loadingIndicator)
     modal.appendChild(iframe)
 
-    // Append modal to body
     document.body.appendChild(modal)
   } else {
     alert('No PDF available for this book.')
@@ -205,10 +201,9 @@ const startQuoteRotation = () => {
   quoteInterval = setInterval(() => {
     currentQuoteIndex.value =
       (currentQuoteIndex.value + 1) % quotes.value.length
-  }, 5000) // Change quote every 5 seconds
+  }, 5000)
 }
 
-// Stop the quote rotation when the component is destroyed
 const stopQuoteRotation = () => {
   if (quoteInterval) {
     clearInterval(quoteInterval)
@@ -216,24 +211,21 @@ const stopQuoteRotation = () => {
 }
 
 const handleImageChange = async (event, type) => {
-  const file = event.target.files[0] // Get the selected file
+  const file = event.target.files[0]
   if (file) {
-    const reader = new FileReader() // For preview purposes
+    const reader = new FileReader()
     reader.onloadend = async () => {
-      // Convert the image file to a Base64 string
       const base64String = reader.result
 
-      // Update the appropriate image URL in your state
       if (type === 'profile') {
-        profileImage.value = base64String // Save Base64 in state
+        profileImage.value = base64String
       } else if (type === 'cover') {
-        coverImage.value = base64String // Save Base64 in state
+        coverImage.value = base64String
       }
 
-      // Now that the image is converted, save the profile to the database
-      await saveProfile() // Call saveProfile to update the `user_profile` table
+      await saveProfile()
     }
-    reader.readAsDataURL(file) // Convert the file to Base64
+    reader.readAsDataURL(file)
   }
 }
 
@@ -255,15 +247,15 @@ const saveProfile = async () => {
     // Prepare the update object with the URLs of the profile and cover images
     const updates = {
       user_id: userId,
-      profile_pictures: profileImage.value, // Update profile picture
-      cover_photo: coverImage.value, // Update cover photo
+      profile_pictures: profileImage.value,
+      cover_photo: coverImage.value,
     }
 
-    
+
     // Update the user's profile in the database
     const { error } = await supabase
       .from('user_profile')
-      .upsert(updates, { onConflict: ['user_id'] }) // Use `onConflict` to handle existing profiles
+      .upsert(updates, { onConflict: ['user_id'] })
 
     if (error) {
       console.error('Error saving profile:', error)
@@ -316,7 +308,6 @@ const fetchFavoriteBooks = async () => {
       return;
     }
 
-    // Format favorite books into a usable array
     favoriteBooks.value = favoritesData.map(fav => ({
       id: fav.book_id,
       title: fav.books.title,
@@ -325,17 +316,16 @@ const fetchFavoriteBooks = async () => {
       booksUrl: fav.books.pdf_url,
     }));
 
-    // Set isLoading to false after data is fetched
     isLoading.value = false;
 
   } catch (err) {
     console.error('Unexpected error while fetching favorite books:', err);
-    isLoading.value = false; // Ensure loading is turned off even if there's an error
+    isLoading.value = false;
   }
 };
 
 onMounted(async () => {
-  resetUserProfileToDefaults() // Reset the profile to default values initially
+  resetUserProfileToDefaults()
 
   try {
     const { data: sessionData, error: sessionError } =
@@ -386,17 +376,14 @@ onMounted(async () => {
       coverImage.value = user.value.coverPhoto
     }
 
-    // Fetch the user's favorite books
     await fetchFavoriteBooks()
 
-    // Start rotating quotes when the profile page is mounted
     startQuoteRotation()
   } catch (err) {
     console.error('Unexpected error while fetching profile:', err)
   }
 })
 
-// Clear the interval when the component is destroyed
 onUnmounted(() => {
   stopQuoteRotation()
 })
@@ -407,21 +394,12 @@ onUnmounted(() => {
   <div class="profile-container">
     <!-- Cover Photo Section -->
     <div class="cover-photo-container">
-      <img
-        :src="coverImage"
-        alt="Set Cover Photo"
-        class="cover-photo text-center"
-      />
+      <img :src="coverImage" alt="Set Cover Photo" class="cover-photo text-center" />
       <label for="cover-upload" class="cover-change-icon">
         <i class="mdi mdi-pencil"></i>
       </label>
-      <input
-        type="file"
-        id="cover-upload"
-        @change="e => handleImageChange(e, 'cover')"
-        class="image-input"
-        accept="image/*"
-      />
+      <input type="file" id="cover-upload" @change="e => handleImageChange(e, 'cover')" class="image-input"
+        accept="image/*" />
     </div>
 
     <!-- Profile Picture Section -->
@@ -430,13 +408,8 @@ onUnmounted(() => {
       <label for="image-upload" class="image-change-icon">
         <i class="mdi mdi-pencil"></i>
       </label>
-      <input
-        type="file"
-        id="image-upload"
-        @change="e => handleImageChange(e, 'profile')"
-        class="image-input"
-        accept="image/*"
-      />
+      <input type="file" id="image-upload" @change="e => handleImageChange(e, 'profile')" class="image-input"
+        accept="image/*" />
     </div>
 
     <!-- User Details Section -->
@@ -449,12 +422,7 @@ onUnmounted(() => {
       <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
         <v-icon dark left>mdi-arrow-left</v-icon>Back
       </v-btn>
-      <v-btn
-        @click="saveProfile"
-        class="bordered save-button"
-        color="purple"
-        dark
-      >
+      <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
         <v-icon dark left>mdi-content-save</v-icon> Save Profile
       </v-btn>
     </div>
@@ -467,11 +435,7 @@ onUnmounted(() => {
     <!-- Quotes Section -->
     <div class="quote-section">
       <div class="quote-container">
-        <img
-          :src="quotes[currentQuoteIndex].img"
-          alt="Quote Author"
-          class="quote-avatar"
-        />
+        <img :src="quotes[currentQuoteIndex].img" alt="Quote Author" class="quote-avatar" />
         <div class="quote-text">
           <p>{{ quotes[currentQuoteIndex].text }}</p>
           <p>
@@ -489,39 +453,25 @@ onUnmounted(() => {
     <!-- Favorite Books Section -->
     <div class="favorite-books-section">
       <v-row dense>
-        <!-- Loop through favorite books -->
-        <v-col
-          v-for="book in favoriteBooks"
-          :key="book.id"
-          cols="12"
-          xs="6"
-          sm="6"
-          md="4"
-          lg="3"
-        >
+        <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" xs="6" sm="6" md="4" lg="3">
           <v-card class="book-card pb-5">
             <v-img :src="book.coverImage" height="200px"></v-img>
             <v-card-title>{{ book.title }}</v-card-title>
             <v-card-subtitle>{{ book.author }}</v-card-subtitle>
-            <v-btn
-              color="black"
-              dark
-              class="read mx-2 mt-5"
-              @click="readBook(book.booksUrl)"
-            >
+            <v-btn color="black" dark class="read mx-2 mt-5" @click="readBook(book.booksUrl)">
               Read
             </v-btn>
           </v-card>
         </v-col>
       </v-row>
 
-       <!-- Loading State -->
-<div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
-  <div class="text-center">
-    <p>Loading favorites, please wait...</p>
-    <v-progress-circular indeterminate color="purple" size="45"></v-progress-circular>
-  </div>
-</div>
+      <!-- Loading State -->
+      <div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
+        <div class="text-center">
+          <p>Loading favorites, please wait...</p>
+          <v-progress-circular indeterminate color="purple" size="45"></v-progress-circular>
+        </div>
+      </div>
 
       <!-- Empty Favorite Books Message -->
       <div v-if="!isLoading && favoriteBooks.length === 0" class="no-text text-center" style="height: 50vh;">
@@ -650,15 +600,13 @@ onUnmounted(() => {
   top: 50%;
   width: 40%;
   height: 1px;
-  background: linear-gradient(
-    45deg,
-    #000,
-    plum,
-    #262626,
-    #b408a3cf,
-    #64c0ce,
-    #000
-  );
+  background: linear-gradient(45deg,
+      #000,
+      plum,
+      #262626,
+      #b408a3cf,
+      #64c0ce,
+      #000);
 }
 
 .divider::before {
@@ -668,6 +616,7 @@ onUnmounted(() => {
 .divider::after {
   right: 0;
 }
+
 .divider span {
   display: inline-block;
   padding: 0 10px;
@@ -680,20 +629,20 @@ onUnmounted(() => {
   animation: gradient-animation 3s ease infinite;
 }
 
-/* Gradient animation keyframes */
 @keyframes gradient-animation {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
 }
 
-/* Quotes Section Styles */
 .quote-section {
   margin-top: 40px;
   text-align: center;
@@ -720,7 +669,6 @@ onUnmounted(() => {
   max-width: 400px;
 }
 
-/* Favorite Books Section Styles */
 .favorite-books-section {
   margin-top: 40px;
   width: 100%;
@@ -732,7 +680,6 @@ onUnmounted(() => {
   font-size: 1rem;
 }
 
-/* No-Favorites Text Style */
 .text {
   display: flex;
   justify-content: center;

@@ -4,11 +4,10 @@ import SideNavigation from '@/components/layout/SideNavigation.vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase'
-import confetti from 'canvas-confetti'  // Import canvas-confetti
 
 const isDrawerVisible = ref(false)
-const favoriteBooks = ref([]) 
-const isLoading = ref(true);  
+const favoriteBooks = ref([])
+const isLoading = ref(true);
 const userEmail = ref(null)
 const userId = ref(null)
 const router = useRouter()
@@ -43,12 +42,12 @@ const fetchFavoritesFromSupabase = async () => {
       title: favorite.books.title,
       author: favorite.books.author,
       coverImage: favorite.books.cover_image,
-      booksUrl: favorite.books.pdf_url, 
+      booksUrl: favorite.books.pdf_url,
     }))
   } catch (err) {
     console.error('Unexpected error while fetching favorites:', err.message);
   } finally {
-    isLoading.value = false;  // Stop loading once the data is fetched
+    isLoading.value = false;
   }
 }
 
@@ -79,8 +78,8 @@ const readBook = book => {
     const loadingIndicator = document.createElement('div')
     loadingIndicator.id = 'loadingIndicator'
     loadingIndicator.style.display = 'flex'
-    loadingIndicator.style.flexDirection = 'column' 
-    loadingIndicator.style.alignItems = 'center' 
+    loadingIndicator.style.flexDirection = 'column'
+    loadingIndicator.style.alignItems = 'center'
     loadingIndicator.style.justifyContent = 'center'
     loadingIndicator.style.height = '100%'
     loadingIndicator.style.color = '#fff'
@@ -110,7 +109,7 @@ const readBook = book => {
     iframe.style.width = '80%'
     iframe.style.height = '80%'
     iframe.style.border = 'none'
-    iframe.style.display = 'none' 
+    iframe.style.display = 'none'
 
     // Handle iframe load event
     iframe.onload = () => {
@@ -120,7 +119,7 @@ const readBook = book => {
 
     const backButton = document.createElement('button')
     backButton.innerText = 'Close'
-    backButton.style.margin = '10px' 
+    backButton.style.margin = '10px'
     backButton.style.marginTop = '31.8px'
     backButton.style.marginBottom = '3px'
     backButton.style.padding = '5px 20px'
@@ -131,19 +130,17 @@ const readBook = book => {
     backButton.style.cursor = 'pointer'
 
     backButton.onclick = () => {
-      modal.remove() 
+      modal.remove()
     }
 
-    // Append elements to modal
     modal.appendChild(backButton)
     modal.appendChild(loadingIndicator)
     modal.appendChild(iframe)
 
-    // Append modal to body
     document.body.appendChild(modal)
   } else {
     alertMessage.value = `No PDF available for this book: ${book.title}`
-    showAlert.value=true
+    showAlert.value = true
   }
 }
 
@@ -169,7 +166,6 @@ const toggleFavorite = async book => {
           book_id: book.id,
         },
       ])
-      // Refresh the list
       await fetchFavoritesFromSupabase()
       console.log('Book added to favorites:', book)
     }
@@ -183,23 +179,12 @@ const isFavorite = book => {
   return favoriteBooks.value.some(favBook => favBook.id === book.id)
 }
 
-// // Confetti trigger function
-// const triggerConfetti = () => {
-//   confetti({
-//     particleCount: 150,     // Number of confetti particles
-//     spread: 360,            // Spread in a full circle
-//     origin: { y: 0.6 },     // Vertical origin
-//     colors: ['#ff0', '#ff6347', '#00ff00', '#0000ff'],  // Confetti colors
-//   })
-// }
-
-// On Component Mount
 onMounted(async () => {
   try {
     const { data, error } = await supabase.auth.getSession()
 
     if (error || !data?.session?.user) {
-      router.push('/login') 
+      router.push('/login')
       return
     }
 
@@ -214,10 +199,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AppLayout
-    :is-with-app-bar-nav-icon="true"
-    @is-drawer-visible="isDrawerVisible = !isDrawerVisible"
-  >
+  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
     <template #navigation>
       <SideNavigation :is-drawer-visible="isDrawerVisible" />
     </template>
@@ -225,70 +207,44 @@ onMounted(async () => {
     <template #content>
       <v-container>
         <h1 class="text-right my-4">
-      <!-- Heart-shaped button to trigger confetti -->
-      <v-btn icon color="black" dark class="fav-icon mx-6" @click="triggerConfetti">
-        <v-icon color="purple">mdi-heart</v-icon>
-      </v-btn>
-    </h1>
+          <v-btn icon color="black" dark class="fav-icon mx-6" @click="triggerConfetti">
+            <v-icon color="purple">mdi-heart</v-icon>
+          </v-btn>
+        </h1>
 
 
         <v-row dense>
-          <v-col
-            v-for="book in favoriteBooks"
-            :key="book.id"
-            cols="12"
-            sm="6"
-            md="4"
-          >
+          <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" sm="6" md="4">
             <v-card>
-              <v-img
-                :src="book.coverImage"
-                height="200px"
-                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              />
+              <v-img :src="book.coverImage" height="200px" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" />
               <v-card-title>{{ book.title }}</v-card-title>
               <v-card-subtitle>{{ book.author }}</v-card-subtitle>
               <v-card-actions class="d-flex justify-center">
-                <v-btn
-                  color="purple"
-                  dark
-                  class="bordered mx-2 mt-5"
-                  @click="readBook(book)"
-                  >Read</v-btn
-                >
+                <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(book)">Read</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn
-                  icon
-                  color="purple"
-                  dark
-                  class="glow mx-2 mt-5"
-                  @click="toggleFavorite(book)"
-                >
-                  <v-icon :color="isFavorite(book) ? 'purple' : ''"
-                    >mdi-heart</v-icon
-                  >
+                <v-btn icon color="purple" dark class="glow mx-2 mt-5" @click="toggleFavorite(book)">
+                  <v-icon :color="isFavorite(book) ? 'purple' : ''">mdi-heart</v-icon>
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
 
-       <!-- Loading State -->
-<div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
-  <div class="text-center">
-    <p>Loading favorites, please wait...</p>
-    <v-progress-circular indeterminate color="purple" size="45"></v-progress-circular>
-  </div>
-</div>
+        <div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
+          <div class="text-center">
+            <p>Loading favorites, please wait...</p>
+            <v-progress-circular indeterminate color="purple" size="45"></v-progress-circular>
+          </div>
+        </div>
 
 
-    <!-- No Favorites Message -->
-    <p v-if="!isLoading && favoriteBooks.length === 0" class="text d-flex justify-center align-center" style="height: 50vh;">
-      No favorite books added yet.
-    </p>
+        <p v-if="!isLoading && favoriteBooks.length === 0" class="text d-flex justify-center align-center"
+          style="height: 50vh;">
+          No favorite books added yet.
+        </p>
 
-         <!-- Snackbar Alert -->
-         <v-snackbar v-model="showAlert" :timeout="3000" top right>
+        <!-- Snackbar Alert -->
+        <v-snackbar v-model="showAlert" :timeout="3000" top right>
           {{ alertMessage }}
           <v-btn color="pink" text @click="showAlert = false">Close</v-btn>
         </v-snackbar>
@@ -300,7 +256,6 @@ onMounted(async () => {
 <script>
 export default {
   mounted() {
-    // Dynamically load the canvas-confetti script
     const script = document.createElement('script')
     script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js'
     script.onload = () => {
@@ -309,14 +264,13 @@ export default {
   },
   methods: {
     triggerConfetti() {
-      // Ensure confetti is available
       if (window.confetti) {
         confetti({
           particleCount: 300,
           spread: 360,
           origin: { y: 0.6 },
-          scalar: .5,  
-          colors: ['#f749f1', '#0ff', '#b909fe', '#c096ff'],  // Custom colors (red, green, blue, yellow)
+          scalar: .5,
+          colors: ['#f749f1', '#0ff', '#b909fe', '#c096ff'],
         })
       }
     }
@@ -328,10 +282,12 @@ export default {
 
 <style scoped>
 @keyframes pop {
+
   0%,
   100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
@@ -405,24 +361,4 @@ export default {
 .v-card-subtitle {
   text-align: center;
 }
-/* .gradient-text {
-  background: linear-gradient(45deg, #64c0ce, #b909fe, #64c0ce);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 1.5rem;
-  animation: gradient-animation 3s ease infinite;
-}
-
-@keyframes gradient-animation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-} */
 </style>
