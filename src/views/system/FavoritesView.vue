@@ -4,12 +4,17 @@ import SideNavigation from '@/components/layout/SideNavigation.vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase'
+import confetti from 'canvas-confetti'  // Import canvas-confetti
 
 const isDrawerVisible = ref(false)
-const favoriteBooks = ref([]) // This will hold the list of favorite books
+const favoriteBooks = ref([]) 
+const isLoading = ref(true);  
 const userEmail = ref(null)
 const userId = ref(null)
 const router = useRouter()
+const alertMessage = ref('')
+const showAlert = ref(false)
+
 
 // Function to fetch the user's favorite books from Supabase
 const fetchFavoritesFromSupabase = async () => {
@@ -21,7 +26,6 @@ const fetchFavoritesFromSupabase = async () => {
 
     console.log('Fetching favorite books for user ID:', userId.value)
 
-    // Fetch favorites with book details including `pdf_url`
     const { data: favoriteData, error: fetchError } = await supabase
       .from('favorites')
       .select('book_id, books(id, title, author, cover_image, pdf_url)')
@@ -37,26 +41,25 @@ const fetchFavoritesFromSupabase = async () => {
 
     console.log('Favorite entries fetched from Supabase:', favoriteData)
 
-    // Map favorites data to the format expected by the UI
     favoriteBooks.value = favoriteData.map(favorite => ({
       id: favorite.books.id,
       title: favorite.books.title,
       author: favorite.books.author,
       coverImage: favorite.books.cover_image,
-      booksUrl: favorite.books.pdf_url, // Include the `pdf_url`
+      booksUrl: favorite.books.pdf_url, 
     }))
   } catch (err) {
-    console.error('Unexpected error while fetching favorites:', err.message)
+    console.error('Unexpected error while fetching favorites:', err.message);
+  } finally {
+    isLoading.value = false;  // Stop loading once the data is fetched
   }
 }
 
 //PDF
-const readBook = booksUrl => {
-  if (booksUrl) {
-    // Create a modal or overlay to display the loading spinner and iframe
+const readBook = book => {
+  if (book.booksUrl) {
     const existingModal = document.getElementById('pdfModal')
     if (existingModal) {
-      // If modal already exists, remove it to prevent duplicates
       existingModal.remove()
     }
 
@@ -79,10 +82,10 @@ const readBook = booksUrl => {
     const loadingIndicator = document.createElement('div')
     loadingIndicator.id = 'loadingIndicator'
     loadingIndicator.style.display = 'flex'
-    loadingIndicator.style.flexDirection = 'column' // Stack elements vertically
-    loadingIndicator.style.alignItems = 'center' // Horizontally center the content
-    loadingIndicator.style.justifyContent = 'center' // Vertically center the content
-    loadingIndicator.style.height = '100%' // Take full height of the container
+    loadingIndicator.style.flexDirection = 'column' 
+    loadingIndicator.style.alignItems = 'center' 
+    loadingIndicator.style.justifyContent = 'center'
+    loadingIndicator.style.height = '100%'
     loadingIndicator.style.color = '#fff'
 
     loadingIndicator.innerHTML = `
@@ -106,24 +109,24 @@ const readBook = booksUrl => {
     // Add iframe for the PDF
     const iframe = document.createElement('iframe')
     iframe.id = 'pdfViewer'
-    iframe.src = booksUrl
+    iframe.src = book.booksUrl
     iframe.style.width = '80%'
     iframe.style.height = '80%'
     iframe.style.border = 'none'
-    iframe.style.display = 'none' // Initially hide until loaded
+    iframe.style.display = 'none' 
 
     // Handle iframe load event
     iframe.onload = () => {
-      loadingIndicator.style.display = 'none' // Hide loading indicator
-      iframe.style.display = 'block' // Show iframe
+      loadingIndicator.style.display = 'none'
+      iframe.style.display = 'block'
     }
 
     const backButton = document.createElement('button')
     backButton.innerText = 'Close'
-    backButton.style.margin = '10px' // Uniform margin
+    backButton.style.margin = '10px' 
     backButton.style.marginTop = '31.8px'
-    backButton.style.marginBottom = '3px' // Extra space below the button
-    backButton.style.padding = '5px 20px' // Padding inside the button
+    backButton.style.marginBottom = '3px'
+    backButton.style.padding = '5px 20px'
     backButton.style.backgroundColor = '#9C27B0'
     backButton.style.color = '#fff'
     backButton.style.border = 'none'
@@ -131,7 +134,7 @@ const readBook = booksUrl => {
     backButton.style.cursor = 'pointer'
 
     backButton.onclick = () => {
-      modal.remove() // Remove modal when back button is clicked
+      modal.remove() 
     }
 
     // Append elements to modal
@@ -142,7 +145,8 @@ const readBook = booksUrl => {
     // Append modal to body
     document.body.appendChild(modal)
   } else {
-    alert('No PDF available for this book.')
+    alertMessage.value = `No PDF available for this book: ${book.title}`
+    showAlert.value=true
   }
 }
 
@@ -151,20 +155,17 @@ const toggleFavorite = async book => {
   try {
     const isFav = isFavorite(book)
     if (isFav) {
-      // Remove from favorites
       await supabase
         .from('favorites')
         .delete()
         .eq('user_id', userId.value)
         .eq('book_id', book.id)
 
-      // Update UI
       favoriteBooks.value = favoriteBooks.value.filter(
         favBook => favBook.id !== book.id,
       )
       console.log('Book removed from favorites:', book)
     } else {
-      // Add to favorites
       await supabase.from('favorites').insert([
         {
           user_id: userId.value,
@@ -185,13 +186,23 @@ const isFavorite = book => {
   return favoriteBooks.value.some(favBook => favBook.id === book.id)
 }
 
+// // Confetti trigger function
+// const triggerConfetti = () => {
+//   confetti({
+//     particleCount: 150,     // Number of confetti particles
+//     spread: 360,            // Spread in a full circle
+//     origin: { y: 0.6 },     // Vertical origin
+//     colors: ['#ff0', '#ff6347', '#00ff00', '#0000ff'],  // Confetti colors
+//   })
+// }
+
 // On Component Mount
 onMounted(async () => {
   try {
     const { data, error } = await supabase.auth.getSession()
 
     if (error || !data?.session?.user) {
-      router.push('/login') // Redirect if not logged in
+      router.push('/login') 
       return
     }
 
@@ -217,10 +228,12 @@ onMounted(async () => {
     <template #content>
       <v-container>
         <h1 class="text-right my-4">
-          <v-btn icon color="black" dark class="fav-icon mx-6">
-            <v-icon color="purple">mdi-heart</v-icon>
-          </v-btn>
-        </h1>
+      <!-- Heart-shaped button to trigger confetti -->
+      <v-btn icon color="black" dark class="fav-icon mx-6" @click="triggerConfetti">
+        <v-icon color="purple">mdi-heart</v-icon>
+      </v-btn>
+    </h1>
+
 
         <v-row dense>
           <v-col
@@ -243,7 +256,7 @@ onMounted(async () => {
                   color="purple"
                   dark
                   class="bordered mx-2 mt-5"
-                  @click="readBook(book.booksUrl)"
+                  @click="readBook(book)"
                   >Read</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -263,13 +276,59 @@ onMounted(async () => {
           </v-col>
         </v-row>
 
-        <p v-if="favoriteBooks.length === 0" class="text">
-          No favorite books added yet.
-        </p>
+       <!-- Loading State -->
+<div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
+  <div class="text-center">
+    <p>Loading favorites, please wait...</p>
+    <v-progress-circular indeterminate color="purple" size="45"></v-progress-circular>
+  </div>
+</div>
+
+
+    <!-- No Favorites Message -->
+    <p v-if="!isLoading && favoriteBooks.length === 0" class="text d-flex justify-center align-center" style="height: 50vh;">
+      No favorite books added yet.
+    </p>
+
+         <!-- Snackbar Alert -->
+         <v-snackbar v-model="showAlert" :timeout="3000" top right>
+          {{ alertMessage }}
+          <v-btn color="pink" text @click="showAlert = false">Close</v-btn>
+        </v-snackbar>
       </v-container>
     </template>
   </AppLayout>
 </template>
+
+<script>
+export default {
+  mounted() {
+    // Dynamically load the canvas-confetti script
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js'
+    script.onload = () => {
+      console.log('Confetti script loaded!');
+    }
+    document.head.appendChild(script)
+  },
+  methods: {
+    triggerConfetti() {
+      // Ensure confetti is available
+      if (window.confetti) {
+        confetti({
+          particleCount: 300,
+          spread: 360,
+          origin: { y: 0.6 },
+          scalar: .5,  
+          colors: ['#f749f1', '#0ff', '#b909fe', '#c096ff'],  // Custom colors (red, green, blue, yellow)
+        })
+      }
+    }
+  }
+}
+</script>
+
+
 
 <style scoped>
 @keyframes pop {

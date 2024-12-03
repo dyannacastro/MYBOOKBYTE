@@ -5,6 +5,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { supabase } from '@/utils/supabase'
 
 const router = useRouter()
+const isLoading = ref(true);  
+
 
 const user = ref({
   displayName: '',
@@ -293,28 +295,27 @@ const resetUserProfileToDefaults = () => {
 // Function to fetch favorite books of the user from the Supabase database
 const fetchFavoriteBooks = async () => {
   try {
-    const { data: sessionData, error: sessionError } =
-      await supabase.auth.getSession()
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) {
-      console.error('Error fetching session:', sessionError)
-      return
+      console.error('Error fetching session:', sessionError);
+      return;
     }
 
-    const userId = sessionData?.session?.user?.id
+    const userId = sessionData?.session?.user?.id;
     if (!userId) {
-      console.error('User is not logged in.')
-      return
+      console.error('User is not logged in.');
+      return;
     }
 
     const { data: favoritesData, error: favoritesError } = await supabase
       .from('favorites')
       .select('book_id, books (title, author, cover_image, pdf_url)')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false });
 
     if (favoritesError) {
-      console.error('Error fetching favorite books:', favoritesError)
-      return
+      console.error('Error fetching favorite books:', favoritesError);
+      return;
     }
 
     // Format favorite books into a usable array
@@ -324,11 +325,16 @@ const fetchFavoriteBooks = async () => {
       author: fav.books.author,
       coverImage: fav.books.cover_image,
       booksUrl: fav.books.pdf_url,
-    }))
+    }));
+
+    // Set isLoading to false after data is fetched
+    isLoading.value = false;
+
   } catch (err) {
-    console.error('Unexpected error while fetching favorite books:', err)
+    console.error('Unexpected error while fetching favorite books:', err);
+    isLoading.value = false; // Ensure loading is turned off even if there's an error
   }
-}
+};
 
 onMounted(async () => {
   resetUserProfileToDefaults() // Reset the profile to default values initially
@@ -402,6 +408,7 @@ onUnmounted(() => {
 
 <template>
   <div class="profile-container">
+    <!-- Cover Photo Section -->
     <div class="cover-photo-container">
       <img
         :src="coverImage"
@@ -420,6 +427,7 @@ onUnmounted(() => {
       />
     </div>
 
+    <!-- Profile Picture Section -->
     <div class="profile-picture-container">
       <img :src="profileImage" alt="Profile Picture" class="profile-picture" />
       <label for="image-upload" class="image-change-icon">
@@ -434,10 +442,12 @@ onUnmounted(() => {
       />
     </div>
 
+    <!-- User Details Section -->
     <div class="user-details">
       <h3>{{ user.displayName }}</h3>
     </div>
 
+    <!-- Action Buttons -->
     <div class="button-container">
       <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
         <v-icon dark left>mdi-arrow-left</v-icon>Back
@@ -452,7 +462,7 @@ onUnmounted(() => {
       </v-btn>
     </div>
 
-    <!-- Divider Section -->
+    <!-- Divider for Quote Section -->
     <div class="divider">
       <span>Quote of the Moment</span>
     </div>
@@ -474,13 +484,15 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Divider Section -->
+    <!-- Divider for Books Section -->
     <div class="divider">
       <span>My Favorite Books</span>
     </div>
 
+    <!-- Favorite Books Section -->
     <div class="favorite-books-section">
       <v-row dense>
+        <!-- Loop through favorite books -->
         <v-col
           v-for="book in favoriteBooks"
           :key="book.id"
@@ -499,14 +511,25 @@ onUnmounted(() => {
               dark
               class="read mx-2 mt-5"
               @click="readBook(book.booksUrl)"
-              >Read</v-btn
             >
+              Read
+            </v-btn>
           </v-card>
         </v-col>
       </v-row>
-      <p v-if="favoriteBooks.length === 0" class="no-favorites-text">
-        You haven't added any favorite books yet.
-      </p>
+
+       <!-- Loading State -->
+<div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
+  <div class="text-center">
+    <p>Loading favorites, please wait...</p>
+    <v-progress-circular indeterminate color="purple" size="45"></v-progress-circular>
+  </div>
+</div>
+
+      <!-- Empty Favorite Books Message -->
+      <div v-if="!isLoading && favoriteBooks.length === 0" class="no-text text-center" style="height: 50vh;">
+        <p>No favorite books yet.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -713,9 +736,22 @@ onUnmounted(() => {
 }
 
 /* No-Favorites Text Style */
-.no-favorites-text {
-  color: #666;
-  margin-top: 20px;
+.text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 65vh;
+  font-size: 0.7rem;
+}
+
+.no-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 65vh;
+  font-size: 0.9rem;
 }
 
 .read {
