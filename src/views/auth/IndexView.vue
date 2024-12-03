@@ -401,17 +401,16 @@ export default {
         },
         {
           id: 4,
-          title: 'Cyber Security',
-          author: 'Mary Manjikian',
-          image: '/images/cybersec.webp',
+          title: 'The 48 Laws of Power',
+          author: 'Robert Grrene',
+          image: '/images/14 laws.jpg',
           description:
-            'Learn how to protect sensitive data and stay ahead of cyber threats. This guide delves into practical techniques and critical strategies for a safer digital future.',
-        },
+          'It presents 48 "laws" for navigating relationships with manipulation, strategy, and deception, offering insights into the tactics of influential figures. The book serves as a guide to understanding power and influence.'        },
         {
           id: 5,
           title: 'A Tale Of Two Cities',
           author: 'Charles Dickens',
-          image: '/images/a tale of 2 cities.jpg',
+          image: '/images/tales.jpg',
           description:
             'Set against the turmoil of the French Revolution, this tale weaves a story of love, sacrifice, and redemption. It captures the dramatic contrasts between London and Paris during this turbulent time.',
         },
