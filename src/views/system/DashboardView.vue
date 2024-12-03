@@ -78,7 +78,15 @@ const fetchUserFavorites = async () => {
 
 // Function to check if the book is a favorite
 const isFavorite = bookId => {
-  return favoritesStore.favoriteBooks.some(favorite => favorite.id === bookId)
+  return favoritesStore.favoriteBooks.some((favorite) => {
+    return favorite.id === bookId
+  })
+}
+
+const isFavoriteTitle = bookTitle => {
+  return favoritesStore.favoriteBooks.some((favorite) => {
+    return favorite.title === bookTitle
+  })
 }
 
 // Function to toggle favorite
@@ -128,6 +136,8 @@ const toggleFavorite = async book => {
     console.error('Error toggling favorite:', err)
   }
 }
+
+
 
 // Function to add a favorite to Supabase
 const addFavoriteToSupabase = async (bookId, userId) => {
@@ -187,7 +197,7 @@ const fetchItems = async genre => {
       `https://openlibrary.org/subjects/${genre}.json`,
     )
     cards.value = response.data.works.map((book, index) => ({
-      id: book.key || `temp-id-${index}`, // Ensure unique ID
+      id: book.key || `temp-id-${index}`,
       title: book.title || 'Untitled Book',
       src: book.cover_id
         ? `https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg`
@@ -195,8 +205,8 @@ const fetchItems = async genre => {
       author: book.authors?.[0]?.name || 'Unknown Author',
       flex: 4,
       booksUrl: book.key
-        ? `https://openlibrary.org${book.key}.pdf` // Assign book-specific PDF URL
-        : null, // No URL for this book
+        ? `https://openlibrary.org${book.key}.pdf`
+        : null,
     }))
 
     // Transform the books data to match the Supabase table structure
@@ -232,10 +242,8 @@ const fetchItems = async genre => {
 //PDF
 const readBook = booksUrl => {
   if (booksUrl) {
-    // Create a modal or overlay to display the loading spinner and iframe
     const existingModal = document.getElementById('pdfModal')
     if (existingModal) {
-      // If modal already exists, remove it to prevent duplicates
       existingModal.remove()
     }
 
@@ -258,10 +266,10 @@ const readBook = booksUrl => {
     const loadingIndicator = document.createElement('div')
     loadingIndicator.id = 'loadingIndicator'
     loadingIndicator.style.display = 'flex'
-    loadingIndicator.style.flexDirection = 'column' // Stack elements vertically
-    loadingIndicator.style.alignItems = 'center' // Horizontally center the content
-    loadingIndicator.style.justifyContent = 'center' // Vertically center the content
-    loadingIndicator.style.height = '100%' // Take full height of the container
+    loadingIndicator.style.flexDirection = 'column'
+    loadingIndicator.style.alignItems = 'center'
+    loadingIndicator.style.justifyContent = 'center'
+    loadingIndicator.style.height = '100%'
     loadingIndicator.style.color = '#fff'
 
     loadingIndicator.innerHTML = `
@@ -289,20 +297,20 @@ const readBook = booksUrl => {
     iframe.style.width = '80%'
     iframe.style.height = '80%'
     iframe.style.border = 'none'
-    iframe.style.display = 'none' // Initially hide until loaded
+    iframe.style.display = 'none'
 
     // Handle iframe load event
     iframe.onload = () => {
-      loadingIndicator.style.display = 'none' // Hide loading indicator
-      iframe.style.display = 'block' // Show iframe
+      loadingIndicator.style.display = 'none'
+      iframe.style.display = 'block'
     }
 
     const backButton = document.createElement('button')
     backButton.innerText = 'Close'
-    backButton.style.margin = '10px' // Uniform margin
+    backButton.style.margin = '10px'
     backButton.style.marginTop = '31.8px'
-    backButton.style.marginBottom = '3px' // Extra space below the button
-    backButton.style.padding = '5px 20px' // Padding inside the button
+    backButton.style.marginBottom = '3px'
+    backButton.style.padding = '5px 20px'
     backButton.style.backgroundColor = '#9C27B0'
     backButton.style.color = '#fff'
     backButton.style.border = 'none'
@@ -310,37 +318,31 @@ const readBook = booksUrl => {
     backButton.style.cursor = 'pointer'
 
     backButton.onclick = () => {
-      modal.remove() // Remove modal when back button is clicked
+      modal.remove()
     }
 
-    // Append elements to modal
     modal.appendChild(backButton)
     modal.appendChild(loadingIndicator)
     modal.appendChild(iframe)
 
-    // Append modal to body
     document.body.appendChild(modal)
   } else {
     alert('No PDF available for this book.')
   }
 }
 
-// Watch the `tabs` variable for changes and fetch new items when the genre changes
 watch(tabs, newGenre => {
   fetchItems(newGenre)
 })
 
-// Watch `tabs` for genre changes
 watch(tabs, newGenre => fetchItems(newGenre))
 
-// Watch `searchQuery` to reload books if input is cleared manually
 watch(searchQuery, newQuery => {
   if (newQuery.trim() === '') {
     fetchItems(tabs.value)
   }
 })
 
-// Method to handle the clear (X) button click in the text field
 function clearSearch() {
   searchQuery.value = ''
   fetchItems(tabs.value)
@@ -382,29 +384,16 @@ export default {
 </script>
 
 <template>
-  <AppLayout
-    :is-with-app-bar-nav-icon="true"
-    @is-drawer-visible="isDrawerVisible = !isDrawerVisible"
-  >
+  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
     <template #content>
       <v-container class="dashboard">
         <h3 class="gradient-text"></h3>
 
         <!-- Carousel Section -->
-        <v-carousel
-          cycle
-          height="400"
-          hide-arrows
-          hide-delimiters
-          :interval="4000"
-        >
+        <v-carousel cycle height="400" hide-arrows hide-delimiters :interval="4000">
           <v-carousel-item v-for="(slide, i) in slides" :key="i">
             <v-img :src="slide.image" height="100%">
-              <v-row
-                class="fill-height"
-                align="center"
-                justify="center"
-              ></v-row>
+              <v-row class="fill-height" align="center" justify="center"></v-row>
             </v-img>
           </v-carousel-item>
         </v-carousel>
@@ -413,16 +402,9 @@ export default {
         <v-row justify="center">
           <v-col cols="12" sm="8" md="6" class="search">
             <h2 class="text my-4 text-center">{{ displayedText }}</h2>
-            <v-text-field
-              v-model="searchQuery"
-              label="Search by title"
-              prepend-inner-icon="mdi-magnify"
-              clearable
-              @click:clear="clearSearch"
-              class="mx-auto rounded-pill-search"
-              :loading="loading"
-              color="#E1BEE7"
-            ></v-text-field>
+            <v-text-field v-model="searchQuery" label="Search by title" prepend-inner-icon="mdi-magnify" clearable
+              @click:clear="clearSearch" class="mx-auto rounded-pill-search" :loading="loading"
+              color="#E1BEE7"></v-text-field>
           </v-col>
         </v-row>
 
@@ -430,14 +412,8 @@ export default {
         <h3 class="gradient-text my-4">BOOK GENRES</h3>
         <v-row class="genre-icons my-4" justify="center">
           <v-col v-for="genre in genres" :key="genre" cols="6" md="3" lg="2">
-            <v-btn
-              class="genre-icon gradient-button"
-              :class="{ active: tabs === genre }"
-              @click="tabs = genre"
-              elevation="2"
-              block
-              rounded
-            >
+            <v-btn class="genre-icon gradient-button" :class="{ active: tabs === genre }" @click="tabs = genre"
+              elevation="2" block rounded>
               {{ genre.charAt(0).toUpperCase() + genre.slice(1) }}
             </v-btn>
           </v-col>
@@ -449,51 +425,21 @@ export default {
         <h3 class="gradient-text my-4">SEARCH RESULTS</h3>
         <v-row dense>
           <v-col v-if="loading" cols="12" class="text-center">
-            <v-progress-circular
-              indeterminate
-              color="purple"
-              class="ma-3"
-            ></v-progress-circular>
+            <v-progress-circular indeterminate color="purple" class="ma-3"></v-progress-circular>
             <p class="loading-text">Loading books...</p>
           </v-col>
-          <v-col
-            v-else
-            v-for="card in filteredCards"
-            :key="card.id"
-            :cols="12"
-            sm="6"
-            md="4"
-            lg="3"
-          >
+          <v-col v-else v-for="card in filteredCards" :key="card.id" :cols="12" sm="6" md="4" lg="3">
             <v-card class="heart mt-15">
-              <v-img
-                :src="card.src"
-                class="white--text align-end"
-                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                height="200px"
-              ></v-img>
+              <v-img :src="card.src" class="white--text align-end" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                height="200px"></v-img>
               <v-card-title>{{ card.title }}</v-card-title>
               <v-card-actions>
-                <!-- Pass the correct booksUrl to readBook -->
-                <v-btn
-                  color="purple"
-                  dark
-                  class="bordered mx-2 mt-5"
-                  @click="readBook(card.booksUrl)"
-                >
+                <v-btn color="purple" dark class="bordered mx-2 mt-5" @click="readBook(card.booksUrl)">
                   Read
                 </v-btn>
                 <v-spacer></v-spacer>
-                <v-btn
-                  color="white"
-                  dark
-                  class="glow mx-2 mt-5"
-                  icon
-                  @click="toggleFavorite(card)"
-                >
-                  <v-icon :color="isFavorite(card.id) ? 'purple' : ''"
-                    >mdi-heart</v-icon
-                  >
+                <v-btn color="white" dark class="glow mx-2 mt-5" icon @click="toggleFavorite(card)">
+                  <v-icon :color="isFavoriteTitle(card.title) ? 'purple' : ''">mdi-heart</v-icon>
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -629,14 +575,12 @@ export default {
 }
 
 .genre-icon.active {
-  background: linear-gradient(
-    45deg,
-    #b909fe,
-    #64c0ce,
-    #64c0ce,
-    #64c0ce,
-    #b909fe
-  );
+  background: linear-gradient(45deg,
+      #b909fe,
+      #64c0ce,
+      #64c0ce,
+      #64c0ce,
+      #b909fe);
 }
 
 .genre-icon:not(.active) {
