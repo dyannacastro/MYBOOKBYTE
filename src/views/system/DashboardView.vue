@@ -71,7 +71,6 @@ const fetchUserFavorites = async () => {
       coverImage: fav.books.cover_image,
     }))
 
-    console.log('User favorites loaded:', favoritesStore.favoriteBooks)
   } catch (err) {
     console.error('Unexpected error while fetching favorites:', err.message)
   }
@@ -142,7 +141,7 @@ const addFavoriteToSupabase = async (bookId, userId) => {
       return
     }
 
-    console.log('Book successfully added to favorites in Supabase.')
+    console.log('Book successfully added to favorites.')
   } catch (err) {
     console.error('Unexpected error while adding favorite:', err.message)
   }
@@ -184,13 +183,9 @@ const fetchItems = async genre => {
   loading.value = true
   error.value = null
   try {
-    console.log(`Fetching books for genre: ${genre}`)
-
     const response = await axios.get(
       `https://openlibrary.org/subjects/${genre}.json`,
     )
-    console.log('Fetched books data:', response.data)
-
     cards.value = response.data.works.map((book, index) => ({
       id: book.key || `temp-id-${index}`, // Ensure unique ID
       title: book.title || 'Untitled Book',
@@ -214,10 +209,7 @@ const fetchItems = async genre => {
       genre: genre,
     }))
 
-    console.log('Transformed books data for Supabase:', transformedBooks)
-
     // Insert the transformed books into the Supabase books table
-    console.log('Attempting to save books to Supabase...')
     const { data, error: supabaseError } = await supabase
       .from('books')
       .upsert(transformedBooks, { onConflict: ['title', 'author'] })
@@ -228,14 +220,12 @@ const fetchItems = async genre => {
         supabaseError.message,
       )
     } else {
-      console.log('Books successfully saved in Supabase:', data)
     }
   } catch (error) {
     error.value = 'Failed to load items. Please try again later.'
     console.error('Error fetching books:', error)
   } finally {
     loading.value = false
-    console.log('Finished fetching books, loading:', loading.value)
   }
 }
 
@@ -337,7 +327,6 @@ const readBook = booksUrl => {
 
 // Watch the `tabs` variable for changes and fetch new items when the genre changes
 watch(tabs, newGenre => {
-  console.log(`Genre changed to: ${newGenre}`)
   fetchItems(newGenre)
 })
 
@@ -359,9 +348,6 @@ function clearSearch() {
 
 // Fetch items and run typing animation when the component is mounted
 onMounted(() => {
-  console.log(
-    'Component mounted, starting type text animation and fetching books.',
-  )
   typeText()
   fetchItems(tabs.value)
   fetchUserFavorites()

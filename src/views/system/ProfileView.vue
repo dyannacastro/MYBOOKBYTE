@@ -259,9 +259,7 @@ const saveProfile = async () => {
       cover_photo: coverImage.value, // Update cover photo
     }
 
-    // Debug: log the update object to see the values
-    console.log('Saving profile with data:', updates)
-
+    
     // Update the user's profile in the database
     const { error } = await supabase
       .from('user_profile')
@@ -386,7 +384,6 @@ onMounted(async () => {
 
       profileImage.value = user.value.profilePicture
       coverImage.value = user.value.coverPhoto
-      console.log('Profile fetched successfully!', data)
     }
 
     // Fetch the user's favorite books

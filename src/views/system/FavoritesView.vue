@@ -24,7 +24,6 @@ const fetchFavoritesFromSupabase = async () => {
       return
     }
 
-    console.log('Fetching favorite books for user ID:', userId.value)
 
     const { data: favoriteData, error: fetchError } = await supabase
       .from('favorites')
@@ -38,8 +37,6 @@ const fetchFavoritesFromSupabase = async () => {
       )
       return
     }
-
-    console.log('Favorite entries fetched from Supabase:', favoriteData)
 
     favoriteBooks.value = favoriteData.map(favorite => ({
       id: favorite.books.id,
@@ -307,7 +304,6 @@ export default {
     const script = document.createElement('script')
     script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js'
     script.onload = () => {
-      console.log('Confetti script loaded!');
     }
     document.head.appendChild(script)
   },
