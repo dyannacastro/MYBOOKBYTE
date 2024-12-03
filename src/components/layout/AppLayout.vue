@@ -10,7 +10,8 @@ const teams = ref({
       name: 'Christine Pearl Aboc',
       image: '/images/cp.jpg',
       facebook: 'https://web.facebook.com/christinepearl.aboc.5',
-      github: 'https://github.com/christine'
+      github: 'https://github.com/christine',
+      website: 'https://christinepearlaboc.github.io/',
     },
   ],
   developers: [
@@ -18,16 +19,18 @@ const teams = ref({
       name: 'Dyanna Joy Castro',
       image: '/images/dj.jpg',
       facebook: 'https://web.facebook.com/ddannaaaa',
-      github: 'https://github.com/dyannacastro'
+      github: 'https://github.com/dyannacastro',
+      website: 'https://dyannacastro.github.io/',
     },
     {
       name: 'Pearl Janette Cacayan',
       image: '/images/pj.jpg',
       facebook: 'https://web.facebook.com/pearlyangssss/',
-      github: 'https://github.com/pearljanettecacayan'
+      github: 'https://github.com/pearljanettecacayan',
+      website: 'https://pearljanettecacayan.github.io/',
     },
-  ]
-});
+  ],
+})
 
 const props = defineProps(['isWithAppBarNavIcon'])
 const { mobile } = useDisplay()
@@ -59,9 +62,13 @@ onMounted(() => {
 <template>
   <v-responsive>
     <v-app :class="{ 'blur-background': showDialog }">
-
       <v-app-bar class="px-3" border>
-        <v-app-bar-nav-icon v-if="props.isWithAppBarNavIcon" icon="mdi-menu" class="white-icon" @click="toggleDrawer" />
+        <v-app-bar-nav-icon
+          v-if="props.isWithAppBarNavIcon"
+          icon="mdi-menu"
+          class="white-icon"
+          @click="toggleDrawer"
+        />
         <v-list-item>
           <template #title>
             <span class="welcome-text">Welcome to BookByte</span>
@@ -70,7 +77,6 @@ onMounted(() => {
         <v-spacer></v-spacer>
       </v-app-bar>
 
-
       <SideNavigation v-model:isDrawerVisible="isDrawerVisible" />
 
       <v-main>
@@ -78,43 +84,104 @@ onMounted(() => {
         <slot name="content" />
       </v-main>
 
-      <v-footer class="footer font-weight-bold d-flex justify-center align-center" :class="mobile ? 'text-caption' : ''"
-        color="black" app>
-        <div :class="mobile ? 'w-100 text-center' : 'd-flex align-center text-center'">
-          <img src="/images/book-logo.png" alt="BookByte Logo" class="footer-logo" />
+      <v-footer
+        class="footer font-weight-bold d-flex justify-center align-center"
+        :class="mobile ? 'text-caption' : ''"
+        color="black"
+        app
+      >
+        <div
+          :class="
+            mobile ? 'w-100 text-center' : 'd-flex align-center text-center'
+          "
+        >
+          <img
+            src="/images/book-logo.png"
+            alt="BookByte Logo"
+            class="footer-logo"
+          />
 
-          <p class="font-italic ml-2">
-            © 2024 <span class="font-weight-thin">BookByte | All Rights Reserved</span>
-            <span @click="showAllMembers" class="teams-link" style="color: aqua; padding: 5px;">Teams</span>
+          <p class="ml-2">
+            © 2024
+            <span class="font-weight-thin"
+              >BookByte | All Rights Reserved. |
+            </span>
+            <span
+              @click="showAllMembers"
+              class="teams-link font-italic"
+              style="color: aqua"
+              >Built by Team BookByte</span
+            >
           </p>
         </div>
       </v-footer>
 
-
-
       <!-- Team Members -->
       <v-dialog v-model="showDialog" max-width="600px">
         <div class="card-background">
-          <v-card elevation="8" class="pa-4" style="background-color: black;">
-            <v-card-title class="font-weight-bold mb-8 text-center" style="color: plum;">Bookbyte Team</v-card-title>
+          <v-card elevation="8" class="pa-4" style="background-color: black">
+            <v-card-title
+              class="font-weight-bold mb-8 text-center"
+              style="color: plum"
+              >Bookbyte's Team</v-card-title
+            >
             <v-card-text>
               <v-row>
                 <v-col v-for="(members, team) in teams" :key="team" cols="12">
-                  <h3 class="mt-4" :class="team === 'systemAnalysts' ? 'system-analysts' : 'developers'">
-                    {{ team.charAt(0).toUpperCase() + team.slice(1).replace(/([A-Z])/g, ' $1') }}
+                  <h3
+                    class="mt-4"
+                    :class="
+                      team === 'systemAnalysts'
+                        ? 'system-analysts'
+                        : 'developers'
+                    "
+                  >
+                    {{
+                      team.charAt(0).toUpperCase() +
+                      team.slice(1).replace(/([A-Z])/g, ' $1')
+                    }}
                   </h3>
                   <v-row>
-                    <v-col v-for="member in members" :key="member.name" cols="6" class="d-flex align-center mb-2">
-                      <v-img :src="member.image" width="50" height="50" class="mr-2 circular-image" />
+                    <v-col
+                      v-for="member in members"
+                      :key="member.name"
+                      cols="6"
+                      class="d-flex align-center mb-2"
+                    >
+                      <v-img
+                        :src="member.image"
+                        width="50"
+                        height="50"
+                        class="mr-2 circular-image"
+                      />
                       <div>
                         <span>{{ member.name }}</span>
                         <br />
                         <div class="social-links">
-                          <a v-if="member.facebook" :href="member.facebook" target="_blank" class="facebook">
+                          <a
+                            v-if="member.facebook"
+                            :href="member.facebook"
+                            target="_blank"
+                            class="facebook"
+                          >
                             <v-icon small>mdi-facebook</v-icon>
                           </a>
-                          <a v-if="member.github" :href="member.github" target="_blank" class="github">
+                          <a
+                            v-if="member.github"
+                            :href="member.github"
+                            target="_blank"
+                            class="github"
+                          >
                             <v-icon small>mdi-github</v-icon>
+                          </a>
+                          <a
+                            v-if="member.website"
+                            :href="member.website"
+                            target="_blank"
+                            class="website"
+                          >
+                            <v-icon small>mdi-web</v-icon>
+                            <!-- Website Icon -->
                           </a>
                         </div>
                       </div>
@@ -191,7 +258,17 @@ onMounted(() => {
 .welcome-text {
   font-size: 1.5rem;
   font-weight: bold;
-  background: linear-gradient(45deg, #000, #000, #000, #000, plum, #b408a3cf, #64c0ce, #000);
+  background: linear-gradient(
+    45deg,
+    #000,
+    #000,
+    #000,
+    #000,
+    plum,
+    #b408a3cf,
+    #64c0ce,
+    #000
+  );
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -222,6 +299,12 @@ onMounted(() => {
 }
 
 .v-app-bar {
-  background: black
+  background: black;
+}
+
+.website {
+  color: whitesmoke;
+  text-decoration: none;
+  margin-left: 5px;
 }
 </style>
