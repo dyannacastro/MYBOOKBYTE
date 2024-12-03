@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.6",
+    "animate-canvas-heart": "^0.1.7",
     "axios": "^1.7.7",
+    "canvas-confetti": "^1.9.3",
     "multer": "^1.4.5-lts.1",
     "pinia": "^2.2.4",
     "pinia-plugin-persistedstate": "^4.1.2",
