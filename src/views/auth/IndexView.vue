@@ -284,18 +284,26 @@ const instructions = ref([
       </section>
 
       <!-- Book Gallery Section -->
-      <v-container class="mt-16">
-        <v-row>
-          <v-col v-for="book in books" :key="book.id" cols="12" sm="4" md="4">
-            <v-card class="book-card">
-              <v-img :src="book.image" class="book-image" contain></v-img>
-              <v-card-title class="book-title">{{ book.title }}</v-card-title>
-              <v-card-subtitle>{{ book.author }}</v-card-subtitle>
-              <v-card-text>{{ book.description }}</v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+<v-container class="mt-16">
+  <v-row>
+    <v-col v-for="book in books" :key="book.id" cols="12" sm="4" md="4">
+      <v-card class="book-card">
+        
+        <!-- Make the book image clickable using router-link -->
+        <router-link :to="'/register'" class="book-image-link">
+          <v-img :src="book.image" class="book-image" contain></v-img>
+        </router-link>
+
+        <!-- Book details (non-clickable) -->
+        <v-card-title class="book-title">{{ book.title }}</v-card-title>
+        <v-card-subtitle>{{ book.author }}</v-card-subtitle>
+        <v-card-text>{{ book.description }}</v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
+</v-container>
+
+
 
       <!-- Terms of Use Section -->
       <v-container class="mt-10">
@@ -422,6 +430,11 @@ export default {
 </script>
 
 <style>
+.book-image-link {
+  display: block; /* Makes the link take up the full area of the image */
+  text-decoration: none; /* Removes any underline (if any) */
+}
+
 .instruction-card {
   background-color: #1e1e2f;
   color: white;
@@ -572,6 +585,7 @@ p {
 
 .circle-logo {
   border-radius: 50%;
+  /* box-shadow: 0 0 15px white; */
   box-shadow: 0 0 15px rgba(216, 9, 202, 0.8);
   animation:
     breathe 3s ease-in-out infinite,
