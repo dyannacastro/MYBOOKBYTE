@@ -1,9 +1,12 @@
-"
 <script setup>
+import AppLayout from '@/components/layout/AppLayout.vue'
+import SideNavigation from '@/components/layout/SideNavigation.vue'
 import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { supabase } from '@/utils/supabase'
 
+
+const isDrawerVisible = ref(false)
 const router = useRouter()
 const isLoading = ref(true);
 
@@ -388,97 +391,104 @@ onUnmounted(() => {
   stopQuoteRotation()
 })
 </script>
-"
 
 <template>
-  <div class="profile-container">
-    <!-- Cover Photo Section -->
-    <div class="cover-photo-container">
-      <img :src="coverImage" alt="Set Cover Photo" class="cover-photo text-center" />
-      <label for="cover-upload" class="cover-change-icon">
-        <i class="mdi mdi-pencil"></i>
-      </label>
-      <input type="file" id="cover-upload" @change="e => handleImageChange(e, 'cover')" class="image-input"
-        accept="image/*" />
-    </div>
+  <AppLayout :is-with-app-bar-nav-icon="true" @is-drawer-visible="isDrawerVisible = !isDrawerVisible">
+    <template #navigation>
+      <SideNavigation :is-drawer-visible="isDrawerVisible" />
+    </template>
 
-    <!-- Profile Picture Section -->
-    <div class="profile-picture-container">
-      <img :src="profileImage" alt="Profile Picture" class="profile-picture" />
-      <label for="image-upload" class="image-change-icon">
-        <i class="mdi mdi-pencil"></i>
-      </label>
-      <input type="file" id="image-upload" @change="e => handleImageChange(e, 'profile')" class="image-input"
-        accept="image/*" />
-    </div>
+    <template #content>
+      <div class="profile-container">
+        <!-- Cover Photo Section -->
+        <div class="cover-photo-container">
+          <img :src="coverImage" alt="Set Cover Photo" class="cover-photo text-center" />
+          <label for="cover-upload" class="cover-change-icon">
+            <i class="mdi mdi-pencil"></i>
+          </label>
+          <input type="file" id="cover-upload" @change="e => handleImageChange(e, 'cover')" class="image-input"
+            accept="image/*" />
+        </div>
 
-    <!-- User Details Section -->
-    <div class="user-details">
-      <h3>{{ user.displayName }}</h3>
-    </div>
+        <!-- Profile Picture Section -->
+        <div class="profile-picture-container">
+          <img :src="profileImage" alt="Profile Picture" class="profile-picture" />
+          <label for="image-upload" class="image-change-icon">
+            <i class="mdi mdi-pencil"></i>
+          </label>
+          <input type="file" id="image-upload" @change="e => handleImageChange(e, 'profile')" class="image-input"
+            accept="image/*" />
+        </div>
 
-    <!-- Action Buttons -->
-    <div class="button-container">
-      <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
-        <v-icon dark left>mdi-arrow-left</v-icon>Back
-      </v-btn>
-      <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
-        <v-icon dark left>mdi-content-save</v-icon> Save Profile
-      </v-btn>
-    </div>
+        <!-- User Details Section -->
+        <div class="user-details">
+          <h3>{{ user.displayName }}</h3>
+        </div>
 
-    <!-- Divider for Quote Section -->
-    <div class="divider">
-      <span>Quote of the Moment</span>
-    </div>
+        <!-- Action Buttons -->
+        <div class="button-container">
+          <v-btn @click="goBack" class="bordered back-button" color="purple" dark>
+            <v-icon dark left>mdi-arrow-left</v-icon>Back
+          </v-btn>
+          <v-btn @click="saveProfile" class="bordered save-button" color="purple" dark>
+            <v-icon dark left>mdi-content-save</v-icon> Save Profile
+          </v-btn>
+        </div>
 
-    <!-- Quotes Section -->
-    <div class="quote-section">
-      <div class="quote-container">
-        <img :src="quotes[currentQuoteIndex].img" alt="Quote Author" class="quote-avatar" />
-        <div class="quote-text">
-          <p>{{ quotes[currentQuoteIndex].text }}</p>
-          <p>
-            <strong>― {{ quotes[currentQuoteIndex].author }}</strong>
-          </p>
+        <!-- Divider for Quote Section -->
+        <div class="divider">
+          <span>Quote of the Moment</span>
+        </div>
+
+        <!-- Quotes Section -->
+        <div class="quote-section">
+          <div class="quote-container">
+            <img :src="quotes[currentQuoteIndex].img" alt="Quote Author" class="quote-avatar" />
+            <div class="quote-text">
+              <p>{{ quotes[currentQuoteIndex].text }}</p>
+              <p>
+                <strong>― {{ quotes[currentQuoteIndex].author }}</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider for Books Section -->
+        <div class="divider">
+          <span>My Favorite Books</span>
+        </div>
+
+        <!-- Favorite Books Section -->
+        <div class="favorite-books-section">
+          <v-row dense>
+            <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" xs="6" sm="6" md="4" lg="3">
+              <v-card class="book-card pb-5">
+                <v-img :src="book.coverImage" height="200px"></v-img>
+                <v-card-title>{{ book.title }}</v-card-title>
+                <v-card-subtitle>{{ book.author }}</v-card-subtitle>
+                <v-btn color="black" dark class="read mx-2 mt-5" @click="readBook(book.booksUrl)">
+                  Read
+                </v-btn>
+              </v-card>
+            </v-col>
+          </v-row>
+
+          <!-- Loading State -->
+          <div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
+            <div class="text-center">
+              <p>Loading favorites, please wait...</p>
+              <v-progress-circular indeterminate color="purple" size="45"></v-progress-circular>
+            </div>
+          </div>
+
+          <!-- Empty Favorite Books Message -->
+          <div v-if="!isLoading && favoriteBooks.length === 0" class="no-text text-center" style="height: 50vh;">
+            <p>No favorite books yet.</p>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Divider for Books Section -->
-    <div class="divider">
-      <span>My Favorite Books</span>
-    </div>
-
-    <!-- Favorite Books Section -->
-    <div class="favorite-books-section">
-      <v-row dense>
-        <v-col v-for="book in favoriteBooks" :key="book.id" cols="12" xs="6" sm="6" md="4" lg="3">
-          <v-card class="book-card pb-5">
-            <v-img :src="book.coverImage" height="200px"></v-img>
-            <v-card-title>{{ book.title }}</v-card-title>
-            <v-card-subtitle>{{ book.author }}</v-card-subtitle>
-            <v-btn color="black" dark class="read mx-2 mt-5" @click="readBook(book.booksUrl)">
-              Read
-            </v-btn>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <!-- Loading State -->
-      <div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
-        <div class="text-center">
-          <p>Loading favorites, please wait...</p>
-          <v-progress-circular indeterminate color="purple" size="45"></v-progress-circular>
-        </div>
-      </div>
-
-      <!-- Empty Favorite Books Message -->
-      <div v-if="!isLoading && favoriteBooks.length === 0" class="no-text text-center" style="height: 50vh;">
-        <p>No favorite books yet.</p>
-      </div>
-    </div>
-  </div>
+    </template>
+  </AppLayout>
 </template>
 
 <style scoped>
