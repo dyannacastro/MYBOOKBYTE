@@ -5,7 +5,8 @@ import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { supabase } from '@/utils/supabase'
 
-
+const alertMessage = ref('')
+const showAlert = ref(false)
 const isDrawerVisible = ref(false)
 const router = useRouter()
 const isLoading = ref(true);
@@ -109,7 +110,8 @@ const readBook = booksUrl => {
 
     document.body.appendChild(modal)
   } else {
-    alert('No PDF available for this book.')
+    alertMessage.value = 'No PDF available for this book.'
+    showAlert.value = true
   }
 }
 
@@ -472,6 +474,13 @@ onUnmounted(() => {
               </v-card>
             </v-col>
           </v-row>
+
+
+          <!-- Snackbar Alert -->
+          <v-snackbar v-model="showAlert" :timeout="3000" top right>
+            {{ alertMessage }}
+            <v-btn color="pink" text @click="showAlert = false">Close</v-btn>
+          </v-snackbar>
 
           <!-- Loading State -->
           <div v-if="isLoading" class=" text d-flex justify-center align-center" style="height: 50vh;">
